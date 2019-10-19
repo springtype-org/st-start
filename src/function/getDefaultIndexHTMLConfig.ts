@@ -18,6 +18,8 @@ export const getDefaultIndexHTMLConfig = (config: IBuildConfig) => {
         template: indexHTMLTemplateExists ? config.indexHTMLTemplate : resolve(__dirname, '../index.html' /* path as dist built */),
         favicon: config.indexHTMLFavIcon || '',
         meta: config.indexHTMLMetaTags || {},
-        templateParameters: config.indexHTMLParams || {}
+        templateParameters: config.indexHTMLParams || {},
+        // dynamically imported as needed
+        //excludeChunks: [ 'vendors.proxy-polyfill', 'vendors.whatwg-fetch' ]
     }
 };

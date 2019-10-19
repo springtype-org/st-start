@@ -1,13 +1,10 @@
-
-
 import { Configuration } from "webpack";
 import { IBuildConfig } from "../interface/ibuild-config";
+import { getDefaultESLintConfig } from "./getDefaultESLintConfig";
 import { getDefaultIndexHTMLConfig } from "./getDefaultIndexHTMLConfig";
 import { getDefaultWebpackConfig } from "./getDefaultWebpackConfig";
 
 import webpack = require("webpack");
-
-const chalk = require('chalk');
 
 // common
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -30,19 +27,7 @@ export const getDevelopmentConfig = (config: IBuildConfig): Configuration => {
         new FriendlyErrorsWebpackPlugin(),
         new CopyWebpackPlugin(config.copyFiles || []),
         new ForkTsCheckerWebpackPlugin({
-            eslint: config.eslint || true,
-            logger: {
-                error(...args: Array<any>) {
-                    console.error(chalk.red('✖ ') + chalk.gray('[tck]') + ':', ...args);
-                },
-                warn(...args: Array<any>) {
-                    console.warn(chalk.yellow('✖ ') + chalk.gray('[tck]') + ':', ...args);
-                },
-                info(...args: Array<any>) {
-                    console.warn(chalk.blue('ℹ ') + chalk.gray('[tck]') + ':', ...args);
-                }
-            },
-            formatter: 'codeframe'
+            ...getDefaultESLintConfig(config),
         }),
         new ForkTsCheckerNotifierWebpackPlugin({ 
             title: 'TypeScript', 

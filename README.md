@@ -2,12 +2,16 @@
 
 > Bundles and compiles TypeScript/JavaScript projects for any browser and Node.js.
 
-`st-start` is a CLI that imports an optional local `springtype.ts` config module ([API](https://github.com/springtype-org/st-start/src/interface/ibuild-config.ts)) and runs the `start({ ... })` script.
+`st-start` is a CLI that imports an optional local `springtype.ts` config module [API](https://github.com/springtype-org/st-start/blob/master/src/interface/ibuild-config.ts) and runs the `start({ ... })` script.
 
 This script uses a dynamic `webpack` and `babel` configuration bundle SpringType TypeScript/JavaScript
 projects simply and with the best developer experience.
 
 However, `st-start` it is very well configurable and adapts to many needs easily.
+
+## Install
+
+    yarn add -D st-start
 
 ## Usage
 
@@ -26,7 +30,7 @@ Create script entries in your `package.json`:
 }
 ```
 
-Please make sure that `st-start` are installed.
+Please make sure that `st-start` is installed.
 
 Optionally, create a `springtype.ts` file for customization:
 
@@ -65,8 +69,22 @@ Create script entries in your `package.json`:
 
 Please make sure that `ts-node` and `st-start` are installed.
 
-## Test
+## Build and Test
 
-To run the tests, enter the directory: `__test__/fixture` and run: `yarn` to install the dependencies. These tests are based on jest but are in fact real-world / end-2-end tests.
+In a shell:
 
-    yarn e2e
+    # install dependencies
+    yarn
+
+    # install fixture dependencies
+    cd __test__/fixture
+    yarn
+
+    # change back to root dir
+    cd ../../
+
+    # build st-start
+    yarn build
+
+    # runs a production build and the e2e tests
+    yarn test

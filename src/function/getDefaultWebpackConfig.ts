@@ -29,7 +29,7 @@ export const getDefaultWebpackConfig = (config: IBuildConfig): Configuration => 
 
     privateConfig.output = {
         path: config.outputPath || resolve(process.cwd(), 'dist'),
-        filename: config.outputFileName || '[name].[hash].js',
+        filename: config.outputFileName || '[name].[hash:6].js',
         publicPath: config.publicPath || ""
     }
 

@@ -3,6 +3,9 @@ export interface IBuildConfig {
     // root directory location, defaults to process.cwd()
     context?: string;
 
+    // list of paths to watch for typechecking, defaults to: ['src']
+    typeCheckPaths?: Array<string>;
+
     // entrypoint file, defaults to src/index.ts or src/index.tsx wether exists
     entryPoint?: string;
 
