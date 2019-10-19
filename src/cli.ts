@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+import { existsSync } from 'fs';
+import { start } from './function/start';
+
+const CUSTOM_CONFIG_PATH = './springtype.ts';
+let customConfig = {};
+if (existsSync(CUSTOM_CONFIG_PATH)) {
+    customConfig = import(CUSTOM_CONFIG_PATH) || {};
+}
+start(customConfig);
