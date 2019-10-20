@@ -1,19 +1,20 @@
-import { existsSync } from "fs";
-import { resolve } from "path";
-import { Configuration } from "webpack";
-import { babelOptions } from "../defaults";
-import { IBuildConfig } from "../interface/ibuild-config";
-import { getTsConfigPath } from "./get-ts-config-path";
-import webpack = require("webpack");
+import { existsSync } from 'fs';
+import { resolve } from 'path';
+import { Configuration } from 'webpack';
+import { babelOptions } from '../defaults';
+import { IBuildConfig } from '../interface/ibuild-config';
+import { getTsConfigPath } from './get-ts-config-path';
+import webpack = require('webpack');
+
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const stringifyDefinitions = (definitions: any = {}): any => {
     for (let name in definitions) {
         definitions[name] = JSON.stringify(definitions[name]);
     }
-}
+};
 
 export const getDefaultWebpackConfig = (config: IBuildConfig): Configuration => {
-
     // @ts-ignore
     const privateConfig: Configuration = {};
 
@@ -21,29 +22,30 @@ export const getDefaultWebpackConfig = (config: IBuildConfig): Configuration => 
     privateConfig.context = config.context || process.cwd();
 
     privateConfig.entry = {
-        main: [
-            config.entryPoint || existsSync('./src/index.tsx') ? './src/index.tsx' : './src/index.ts' 
-        ]
-    }
+        main: [config.entryPoint || existsSync('./src/index.tsx') ? './src/index.tsx' : './src/index.ts'],
+    };
 
     privateConfig.output = {
-        path: config.outputPath || resolve(process.cwd(), 'dist'),
-        filename: config.outputFileName || '[name].[hash:6].js',
-        publicPath: config.publicPath || ""
-    }
+        path: config.outputPath || resolve(process.cwd(), 'dist'),
+        filename: config.outputFileName || '[name].[hash].js',
+        publicPath: config.publicPath || '',
+    };
 
     privateConfig.plugins = [
         new webpack.DefinePlugin({
-            ...stringifyDefinitions(config.definitions) || {},
-            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-        })
+            ...(stringifyDefinitions(config.definitions) || {}),
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        }),
+        new MiniCssExtractPlugin({
+            filename: '[name].[contenthash].css',
+        }),
     ];
 
     privateConfig.resolve = {
         symlinks: false,
-        extensions: config.fileExtensions || [".tsx", ".ts", ".js"]
+        extensions: config.fileExtensions || ['.tsx', '.ts', '.js'],
     };
-    
+
     privateConfig.devtool = 'cheap-module-source-map';
 
     privateConfig.module = {
@@ -54,27 +56,49 @@ export const getDefaultWebpackConfig = (config: IBuildConfig): Configuration => 
                 use: [
                     {
                         loader: require.resolve('babel-loader'),
-                        options: babelOptions
+                        options: babelOptions,
                     },
                     {
                         loader: require.resolve('ts-loader'),
-                        options: { 
+                        options: {
                             transpileOnly: true,
-                            configFile: getTsConfigPath()
-                        }
-                    }
-                ]
-            }, {
+                            configFile: getTsConfigPath(),
+                        },
+                    },
+                ],
+            },
+            {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 use: [
                     {
                         loader: require.resolve('babel-loader'),
-                        options: babelOptions
-                    }
-                ]
-              }
-        ]
+                        options: babelOptions,
+                    },
+                ],
+            },
+            {
+                test: /\.css$/i,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            hmr: process.env.NODE_ENV === 'development',
+                        },
+                    },
+                    //{ loader: 'style-loader', options: { injectType: 'linkTag' } },
+                    'css-loader',
+                ],
+            },
+            {
+                test: /\.svg$/,
+                loader: 'svg-inline-loader',
+            },
+            {
+                test: config.rawFileImportExt || /\.txt$/i,
+                use: 'raw-loader',
+            },
+        ],
     };
     return privateConfig;
-}
+};

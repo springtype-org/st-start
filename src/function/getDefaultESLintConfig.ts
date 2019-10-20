@@ -3,7 +3,6 @@ import { IBuildConfig } from '../interface/ibuild-config';
 import { getTsConfigPath } from './get-ts-config-path';
 
 const chalk = require('chalk');
-
 export const getDefaultESLintConfig = (config: IBuildConfig) => {
     let esLintConfigExists = existsSync('.eslintrc.js');
 

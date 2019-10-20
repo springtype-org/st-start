@@ -3,7 +3,6 @@ import { resolve } from "path";
 import { IBuildConfig } from "../interface/ibuild-config";
 
 const chalk = require('chalk');
-
 export const getDefaultIndexHTMLConfig = (config: IBuildConfig) => {
 
     const indexHTMLFilePath = config.indexHTMLTemplate || 'index.html';
@@ -17,7 +16,7 @@ export const getDefaultIndexHTMLConfig = (config: IBuildConfig) => {
     return {
         inject: config.indexHTMLInjectionType || 'body',
         title: config.indexHTMLTitle || '',
-        template: indexHTMLTemplateExists ? config.indexHTMLTemplate : resolve(__dirname, '../index.html' /* path as dist built */),
+        template: indexHTMLFilePath,
         favicon: config.indexHTMLFavIcon || '',
         meta: config.indexHTMLMetaTags || {},
         templateParameters: config.indexHTMLParams || {},

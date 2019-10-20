@@ -15,9 +15,9 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 export const getProductionConfig = (config: IBuildConfig): Configuration => {
     const privateConfig = getDefaultWebpackConfig(config);
@@ -35,16 +35,13 @@ export const getProductionConfig = (config: IBuildConfig): Configuration => {
             useTypescriptIncrementalApi: true,
             memoryLimit: 4096,
         }),
-        new ForkTsCheckerNotifierWebpackPlugin(
-            PnpWebpackPlugin.forkTsCheckerOptions({
-                title: 'TypeScript',
-                excludeWarnings: config.ignoreWarnings || false,
-            }),
-        ),
+        new ForkTsCheckerNotifierWebpackPlugin({
+            title: 'TypeScript',
+            excludeWarnings: config.ignoreWarnings || false,
+        }),
         new HtmlWebpackPlugin({
             ...getDefaultIndexHTMLConfig(config),
             // production optimization:
-            hash: true,
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,
@@ -92,6 +89,7 @@ export const getProductionConfig = (config: IBuildConfig): Configuration => {
                     },
                 },
             }),
+            new OptimizeCSSAssetsPlugin({})
         ],
 
         runtimeChunk: {

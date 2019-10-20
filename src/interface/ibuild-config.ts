@@ -1,4 +1,7 @@
 export interface IBuildConfig {
+
+    // allows for raw file imports like: import "../assets/shader.vert"; defaults to: /\.txt$/i
+    rawFileImportExt?: RegExp;
     
     // root directory location, defaults to process.cwd()
     context?: string;
