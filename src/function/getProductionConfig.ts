@@ -85,6 +85,8 @@ export const getProductionConfig = (config: IBuildConfig): Configuration => {
                 parallel: true,
                 sourceMap: true, // Must be set to true if using source-maps in production
                 terserOptions: {
+                    // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+                    keep_classnames: true, // retain class names for clean DOM
                     output: {
                         comments: false,
                     },

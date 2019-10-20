@@ -1,4 +1,4 @@
-import { existsSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { IBuildConfig } from "../interface/ibuild-config";
 
@@ -6,10 +6,12 @@ const chalk = require('chalk');
 
 export const getDefaultIndexHTMLConfig = (config: IBuildConfig) => {
 
-    const indexHTMLTemplateExists = existsSync(config.indexHTMLTemplate!);
+    const indexHTMLFilePath = config.indexHTMLTemplate || 'index.html';
+    const indexHTMLTemplateExists = existsSync(indexHTMLFilePath);
 
     if (!indexHTMLTemplateExists) {
-        console.log(chalk.yellow('! ') + chalk.gray('[stb]') + ':', 'No index.html template found, using default one.');
+        writeFileSync(indexHTMLFilePath, readFileSync(resolve(__dirname, '../index.html'), 'utf8'));
+        console.log(chalk.yellow('! ') + chalk.gray('[stb]') + ':', 'Created default index.html');
     }
 
     return {

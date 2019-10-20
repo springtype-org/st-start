@@ -3,9 +3,8 @@ import { resolve } from "path";
 import { Configuration } from "webpack";
 import { babelOptions } from "../defaults";
 import { IBuildConfig } from "../interface/ibuild-config";
+import { getTsConfigPath } from "./get-ts-config-path";
 import webpack = require("webpack");
-
-const PnpWebpackPlugin = require("pnp-webpack-plugin");
 
 const stringifyDefinitions = (definitions: any = {}): any => {
     for (let name in definitions) {
@@ -20,12 +19,12 @@ export const getDefaultWebpackConfig = (config: IBuildConfig): Configuration => 
 
     privateConfig.mode = process.env.NODE_ENV === 'production' ? 'production' : 'development';
     privateConfig.context = config.context || process.cwd();
+
     privateConfig.entry = {
         main: [
             config.entryPoint || existsSync('./src/index.tsx') ? './src/index.tsx' : './src/index.ts' 
         ]
     }
-    //privateConfig.safari10NoModuleFix =  'inline-data-base64';
 
     privateConfig.output = {
         path: config.outputPath || resolve(process.cwd(), 'dist'),
@@ -42,16 +41,7 @@ export const getDefaultWebpackConfig = (config: IBuildConfig): Configuration => 
 
     privateConfig.resolve = {
         symlinks: false,
-        extensions: config.fileExtensions || [".tsx", ".ts", ".js"],
-        plugins: [
-            PnpWebpackPlugin,
-        ]
-    };
-
-    privateConfig.resolveLoader =  {
-        plugins: [
-            PnpWebpackPlugin.moduleLoader(module),
-        ],
+        extensions: config.fileExtensions || [".tsx", ".ts", ".js"]
     };
     
     privateConfig.devtool = 'cheap-module-source-map';
@@ -68,9 +58,10 @@ export const getDefaultWebpackConfig = (config: IBuildConfig): Configuration => 
                     },
                     {
                         loader: require.resolve('ts-loader'),
-                        options: PnpWebpackPlugin.tsLoaderOptions({ 
-                            transpileOnly: true 
-                        })
+                        options: { 
+                            transpileOnly: true,
+                            configFile: getTsConfigPath()
+                        }
                     }
                 ]
             }, {
