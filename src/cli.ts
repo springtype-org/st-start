@@ -8,4 +8,8 @@ let customConfig = {};
 if (existsSync(CUSTOM_CONFIG_PATH)) {
     customConfig = import(CUSTOM_CONFIG_PATH) || {};
 }
-start(customConfig);
+try {
+    start(customConfig);
+} catch(e) {
+    console.log('Uncaught error: ', e.message);
+}

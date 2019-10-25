@@ -41,7 +41,7 @@ export const start = async(config: IBuildConfig = {}) => {
                 public: config.public,
                 // allowing for custom domains
                 disableHostCheck: config.proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
-                contentBase: config.assetsPath || 'assets',
+                contentBase: config.assetsPath || '',
                 // also watch for changes in the assets path
                 watchContentBase: true,
                 // show errors in browser view
