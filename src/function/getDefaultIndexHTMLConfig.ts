@@ -6,7 +6,7 @@ const chalk = require('chalk');
 export const getDefaultIndexHTMLConfig = (config: IBuildConfig) => {
 
     const indexHTMLFilePath = config.indexHTMLTemplate || 'index.html';
-    const indexHTMLTemplateExists = existsSync(indexHTMLFilePath);
+    const indexHTMLTemplateExists = existsSync(resolve(process.cwd(), indexHTMLFilePath));
 
     if (!indexHTMLTemplateExists) {
         writeFileSync(indexHTMLFilePath, readFileSync(resolve(__dirname, '../index.html'), 'utf8'));
