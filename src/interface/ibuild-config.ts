@@ -1,4 +1,6 @@
 export interface IBuildConfig {
+    // disables file chunking
+    singleFileOutput?: boolean;
 
     // allows for raw file imports like: import "../assets/shader.vert"; defaults to: /\.txt$/i
     rawFileImportExt?: RegExp;

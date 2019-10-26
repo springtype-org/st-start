@@ -21,8 +21,14 @@ export const getDefaultWebpackConfig = (config: IBuildConfig): Configuration => 
     privateConfig.mode = process.env.NODE_ENV === 'production' ? 'production' : 'development';
     privateConfig.context = config.context || process.cwd();
 
+    const entryFile = resolve(
+        privateConfig.context,
+        config.entryPoint || (existsSync('./src/index.tsx') ? './src/index.tsx' : './src/index.ts'),
+    );
+    const entryFileResolved = resolve(process.cwd(), entryFile);
+
     privateConfig.entry = {
-        main: [config.entryPoint || existsSync('./src/index.tsx') ? './src/index.tsx' : './src/index.ts'],
+        main: [entryFileResolved],
     };
 
     privateConfig.output = {

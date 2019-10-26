@@ -96,7 +96,7 @@ export const getProductionConfig = (config: IBuildConfig): Configuration => {
             name: 'runtime',
         },
 
-        splitChunks: {
+        splitChunks: config.singleFileOutput ? false : {
             chunks: 'async',
             minSize: Infinity,
             maxSize: 0,
