@@ -84,6 +84,7 @@ export const getProductionConfig = (config: IBuildConfig): Configuration => {
                 terserOptions: {
                     // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
                     keep_classnames: true, // retain class names for clean DOM
+                    keep_fnames: true, // ES5 uses function/prototype syntax -> retain class names for a clean DOM
                     output: {
                         comments: false,
                     },
