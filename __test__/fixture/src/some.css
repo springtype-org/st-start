@@ -1,0 +1,29 @@
+.photo {
+    width: 200px;
+}
+
+.roundedPhoto {
+    composes: photo;
+    border-radius: 1rem;
+}
+
+@media (min-width: 30rem) {
+    .photo {
+        width: 400px;
+    }
+}
+
+.caption {
+    composes: visuallyHidden from './utils.css';
+}
+
+.AlignmentSection {
+    background: #f0d2d1;
+    height: 300px;
+    lost-align: center;
+
+    div {
+        background: #e5b1af;
+        lost-column: 1/3;
+    }
+}

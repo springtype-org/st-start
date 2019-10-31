@@ -1,4 +1,22 @@
-import './polyfills';
+import { st } from 'springtype/core';
+import { component } from 'springtype/web/component';
+import { tsx } from 'springtype/web/vdom';
+import * as styles2 from './some.scss';
+
+@component()
+export class Demo extends st.component {
+    render() {
+        return (
+            <div class={styles2.AlignmentSection}>
+                <div>1</div>
+            </div>
+        );
+    }
+}
+
+st.render(<Demo />);
+
+export declare const css: (literals: TemplateStringsArray, ...placeholders: string[]) => string;
 
 export class Works {
     a: boolean;
@@ -8,10 +26,7 @@ export class Works {
         p.appendChild(document.createTextNode('works'));
         document.body.appendChild(p);
 
-        new Proxy({}, {});
-        new WeakMap();
-        const x = new Map();
-        console.log(x);
+        //console.log('styles12', styles, 'styles2', styles2);
     }
 }
 new Works();

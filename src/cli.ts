@@ -1,17 +1,81 @@
 #!/usr/bin/env node
 
+import chalk from 'chalk';
+import * as commander from 'commander';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
+import { defaultCustomConfigFileName } from './defaults';
+import { log } from './function/log';
 import { start } from './function/start';
+import { IBuildConfig } from './interface/ibuild-config';
 
-const CUSTOM_CONFIG_PATH = resolve(process.cwd(), 'springtype.json');
-let customConfig = {};
-if (existsSync(CUSTOM_CONFIG_PATH)) {
-    console.log('[stb] Using local springtype.json config file.');
-    customConfig = JSON.parse(readFileSync(CUSTOM_CONFIG_PATH, "utf8")) || {};
-}
-try {
-    start(customConfig);
-} catch(e) {
-    console.log('Uncaught error: ', e.message);
-}
+const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8'));
+
+const program = new commander.Command(packageJson.name)
+    .version(packageJson.version)
+    .option('-c, --config <configFileName>', 'target a specific config file instead of st.config.js')
+    .option('-e, --env <env>', 'production | development - overrides the NODE_ENV setting')
+    .option('-s, --server', 'runs in server mode: no DevServer, only watch mode in development')
+    .option('-w, --watch', 'runs in watch mode: watches for changes')
+    .option('-i, --info', 'print environment debug info')
+    .allowUnknownOption()
+    .on('--help', () => {
+        console.log();
+        console.log(`    If you have any problems, do not hesitate to file an issue:`);
+        console.log(`      ${chalk.cyan(packageJson.bugs.url)}`);
+        console.log();
+    });
+
+(async () => {
+    program.parse(process.argv);
+
+    if (program.info) {
+        console.log(chalk.bold('\nEnvironment Info:'));
+
+        console.log(
+            await require('envinfo').run(
+                {
+                    System: ['OS', 'CPU'],
+                    Binaries: ['Node', 'npm', 'Yarn'],
+                    Browsers: ['Chrome', 'Edge', 'Internet Explorer', 'Firefox', 'Safari'],
+                    npmPackages: ['springtype'],
+                    npmGlobalPackages: ['st-create'],
+                },
+                {
+                    duplicates: true,
+                    showNotFound: true,
+                },
+            ),
+        );
+    }
+
+    const configFile = program.config ? resolve(program.config) : resolve(process.cwd(), defaultCustomConfigFileName);
+
+    let config: IBuildConfig = {};
+
+    if (program.env) {
+        log(`Using CLI-provided environment: ${program.env}`);
+        config.env = program.env;
+    }
+
+    if (!!program.server) {
+        log('Enabling server mode: Frontend DevServer disabled.');
+        config.serverMode = true;
+    }
+
+    if (!!program.watch) {
+        log('Enabling watch mode: Making sure DevServer or watch is running (depending on server mode, environment).');
+        config.watchMode = true;
+    }
+
+    if (existsSync(configFile)) {
+        log(`Using local config file: ${configFile}`);
+        config = require(configFile) || {};
+    }
+
+    try {
+        start(config);
+    } catch (e) {
+        log(`Fatal: Uncaught error: ${e.message}. Exiting.`, 'error');
+    }
+})();
