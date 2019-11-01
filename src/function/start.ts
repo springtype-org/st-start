@@ -1,10 +1,14 @@
-import {IBuildConfig} from '../interface/ibuild-config';
-import {log} from './log';
-import {startSingle} from './start-single';
-import {enableDefaultFeatures} from "./enable-default-features";
-import {installPeerDependencies} from "./install-peer-dependencies";
+import { IBuildConfig } from '../interface/ibuild-config';
+import { enableDefaultFeatures } from './enable-default-features';
+import { installPeerDependencies } from './install-peer-dependencies';
+import { log } from './log';
+import { startSingle } from './start-single';
 
-export const start = async (runtimeConfiguration: IBuildConfig, config: IBuildConfig | Array<IBuildConfig> = {}, length?: number) => {
+export const start = async (
+    runtimeConfiguration: IBuildConfig,
+    config: IBuildConfig | Array<IBuildConfig> = {},
+    length?: number,
+) => {
     return new Promise(async (resolve: Function, reject: Function) => {
         if (Array.isArray(config)) {
             try {
@@ -19,7 +23,7 @@ export const start = async (runtimeConfiguration: IBuildConfig, config: IBuildCo
             }
         } else {
             try {
-                const configuration = {...config, ...runtimeConfiguration};
+                const configuration = { ...config, ...runtimeConfiguration };
                 enableDefaultFeatures(configuration);
                 log(`Installing required peer dependencies...`);
                 // make sure peer dependencies are installed locally
@@ -35,5 +39,3 @@ export const start = async (runtimeConfiguration: IBuildConfig, config: IBuildCo
         }
     });
 };
-
-

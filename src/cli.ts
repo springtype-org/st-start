@@ -2,12 +2,12 @@
 
 import chalk from 'chalk';
 import * as commander from 'commander';
-import {existsSync, readFileSync} from 'fs';
-import {resolve} from 'path';
-import {defaultCustomConfigFileName} from './defaults';
-import {log} from './function/log';
-import {start} from './function/start';
-import {IBuildConfig} from './interface/ibuild-config';
+import { existsSync, readFileSync } from 'fs';
+import { resolve } from 'path';
+import { defaultCustomConfigFileName } from './defaults';
+import { log } from './function/log';
+import { start } from './function/start';
+import { IBuildConfig } from './interface/ibuild-config';
 
 const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8'));
 
@@ -49,7 +49,9 @@ const program = new commander.Command(packageJson.name)
         );
     }
 
-    const configFile: string = program.config ? resolve(program.config) : resolve(process.cwd(), defaultCustomConfigFileName);
+    const configFile: string = program.config
+        ? resolve(program.config)
+        : resolve(process.cwd(), defaultCustomConfigFileName);
 
     let runtimeConfiguration: IBuildConfig = {};
 

@@ -1,6 +1,6 @@
-import {execSync} from 'child_process';
-import {readFileSync} from 'fs';
-import {deletePathOrFile} from 'st-rm-rf';
+import { execSync } from 'child_process';
+import { readFileSync } from 'fs';
+import { deletePathOrFile } from 'st-rm-rf';
 
 // excution directory is: ../ (!) so __test__ is prefixed
 describe('Bundle', () => {

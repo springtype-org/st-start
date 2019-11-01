@@ -36,7 +36,7 @@ export const getModuleLoadingRules = (
                             ['@babel/plugin-proposal-class-properties', { loose: true }],
                             ['@babel/plugin-proposal-export-default-from'],
                             '@babel/plugin-proposal-object-rest-spread',
-                            '@babel/plugin-transform-runtime',
+                            //'@babel/plugin-transform-runtime',
                             ['babel-plugin-minify-dead-code-elimination', { optimizeRawSize: true, keepFnName: true, keepClassName: true }],
                         ],
                     },
