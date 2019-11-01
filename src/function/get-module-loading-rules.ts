@@ -1,7 +1,6 @@
 import { RuleSetRule } from 'webpack';
 import { defaultJSTranspileFileExcludes, defaultRawFileExtensions, defaultTestCSSTranspileFileExtensions, defaultTestJSTranspileFileExtensions } from '../defaults';
 import { IBuildConfig } from './../interface/ibuild-config';
-import { requirePeerDependency } from './require-peer-dependency';
 
 export const getModuleLoadingRules = (
     config: IBuildConfig,
@@ -16,15 +15,15 @@ export const getModuleLoadingRules = (
                     loader: 'babel-loader',
                     options: {
                         presets: [
-                            requirePeerDependency('@babel/preset-env', config),
+                            '@babel/preset-env',
                             [
-                                requirePeerDependency('@babel/preset-typescript', config),
+                                '@babel/preset-typescript',
                                 {
                                     jsxPragma: 'tsx',
                                 },
                             ],
                             [
-                                requirePeerDependency('@babel/preset-react', config),
+                                '@babel/preset-react',
                                 {
                                     pragma: 'tsx',
                                     pragmaFrag: 'tsx',
@@ -33,12 +32,12 @@ export const getModuleLoadingRules = (
                             ],
                         ],
                         plugins: [
-                            [requirePeerDependency('@babel/plugin-proposal-decorators', config), { legacy: true }],
-                            [requirePeerDependency('@babel/plugin-proposal-class-properties', config), { loose: true }],
-                            [requirePeerDependency('@babel/plugin-proposal-export-default-from', config)],
-                            requirePeerDependency('@babel/plugin-proposal-object-rest-spread', config),
-                            requirePeerDependency('@babel/plugin-transform-runtime', config),
-                            [requirePeerDependency('babel-plugin-minify-dead-code-elimination', config), { optimizeRawSize: true, keepFnName: true, keepClassName: true }],
+                            ['@babel/plugin-proposal-decorators', { legacy: true }],
+                            ['@babel/plugin-proposal-class-properties', { loose: true }],
+                            ['@babel/plugin-proposal-export-default-from'],
+                            '@babel/plugin-proposal-object-rest-spread',
+                            '@babel/plugin-transform-runtime',
+                            ['babel-plugin-minify-dead-code-elimination', { optimizeRawSize: true, keepFnName: true, keepClassName: true }],
                         ],
                     },
                 },
