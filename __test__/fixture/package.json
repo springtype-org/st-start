@@ -3,17 +3,12 @@
     "version": "1.0.0",
     "description": "Test fixture to bundle",
     "scripts": {
-        "start:prod": "cross-env NODE_ENV=production node ../../dist/cli.js -c st-alt.config.js",
-        "start": "cross-env NODE_ENV=development node ../../dist/cli.js -c st-alt.config.js"
+        "start:prod": "node ../../dist/cli.js -e production -c st-alt.config.js",
+        "start": "node ../../dist/cli.js -e development -c st-alt.config.js"
     },
     "author": "Aron Homberg <info@aron-homberg.de>",
     "license": "MIT",
     "devDependencies": {
-        "cross-env": "^6.0.3",
-        "springtype": "2.0.0-alpha.1.17",
-        "typescript": "^3.6.4"
-    },
-    "dependencies": {
         "@babel/core": "^7.6.4",
         "@babel/plugin-proposal-class-properties": "^7.5.5",
         "@babel/plugin-proposal-decorators": "^7.6.0",
@@ -42,9 +37,12 @@
         "sass-loader": "^8.0.0",
         "style-loader": "^1.0.0",
         "terser-webpack-plugin": "^2.2.1",
+        "typescript": "^3.6.4",
         "webpack": "^4.41.2",
         "webpack-bundle-analyzer": "^3.6.0",
-        "webpack-dev-server": "^3.9.0",
-        "yarn": "^1.19.1"
+        "webpack-dev-server": "^3.9.0"
+    },
+    "dependencies": {
+        "springtype": "2.0.0-alpha.1.17"
     }
 }
