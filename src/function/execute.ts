@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { spawn } from "cross-spawn";
+const spawn = require("cross-spawn");
 
 export function execute(cmd: string, args: Array<string> = [], options: any = {}) {
   console.log(chalk.green(">"), chalk.white(`${cmd} ${args.join(" ")}`));
