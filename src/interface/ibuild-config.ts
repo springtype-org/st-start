@@ -4,13 +4,13 @@ export interface IBuildConfig {
     // --- RUNTIME
 
     // overrides process.env.NODE_ENV
-    env?: 'production' | 'development';
+    env?: 'production' | 'development'; // default: 'development'
 
     // disables the frontend DevServer (only watch mode enabled) 
-    serverMode?: boolean;
+    serverMode?: boolean; // default: false
 
     // makes sure DevServer or watch is running (depending on server mode, environment)
-    watchMode?: boolean;
+    watchMode?: boolean; // default: false
     
 
     // --- PROJECT LAYOUT
@@ -79,6 +79,9 @@ export interface IBuildConfig {
 
     // default path the devServer tries to load assets from
     assetsPath?: string; // default: ''
+
+    // DevServer host
+    host?: string; // default: 'localhost'
 
     // DevServer listening port
     port?: number; // default: 4444

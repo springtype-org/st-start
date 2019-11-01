@@ -1,46 +1,46 @@
 import { Configuration } from 'webpack';
 import { defaultBrotliCompressionOptions, defaultBundleAnalyzerOptions, defaultEnableSourceMapInProduction, defaultGzipCompressionOptions, defaultMinifyOptions, defaultRuntimeChunkOptions, defaultSplitChunksOptions, defaultTerserOptions } from '../defaults';
 import { IBuildConfig } from '../interface/ibuild-config';
-import { checkDependency } from './check-dependency';
 import { getBaseConfig } from './get-base-config';
 import { getDefaultIndexHTMLConfig } from './get-default-index-html-config';
+import { requirePeerDependency } from './require-peer-dependency';
 
 export const getProductionConfig = (config: IBuildConfig): Configuration => {
     const webpackConfig = getBaseConfig(config);
 
     const productionPluginPipeline = [
         ...(webpackConfig.plugins || []),
-        new (require('webpack')).HashedModuleIdsPlugin(),
+        new (requirePeerDependency('webpack', config)).HashedModuleIdsPlugin(),
     ];
 
     if (!config.serverMode) {
         productionPluginPipeline.push(
-            new (require('html-webpack-plugin'))({
+            new (requirePeerDependency('html-webpack-plugin', config))({
                 ...getDefaultIndexHTMLConfig(config, webpackConfig),
                 minify: defaultMinifyOptions,
             }),
         );
     }
 
-    if (config.enableGzipCompression && checkDependency('compression-webpack-plugin')) {
+    if (config.enableGzipCompression) {
         productionPluginPipeline.push(
-            new (require('compression-webpack-plugin'))(defaultGzipCompressionOptions),
+            new (requirePeerDependency('compression-webpack-plugin', config))(defaultGzipCompressionOptions),
         );
     }
 
-    if (config.enableBrotliCompression && checkDependency('brotli-webpack-plugin')) {
+    if (config.enableBrotliCompression) {
         productionPluginPipeline.push(
-            new (require('brotli-webpack-plugin'))(defaultBrotliCompressionOptions),
+            new (requirePeerDependency('brotli-webpack-plugin', config))(defaultBrotliCompressionOptions),
         );
     }
 
-    if (config.enableManifestGeneration && checkDependency('webpack-manifest-plugin')) {
-        productionPluginPipeline.push(new (require('webpack-manifest-plugin'))());
+    if (config.enableManifestGeneration) {
+        productionPluginPipeline.push(new (requirePeerDependency('webpack-manifest-plugin', config))());
     }
 
-    if (config.enableBundleAnalyzer && checkDependency('webpack-bundle-analyzer')) {
+    if (config.enableBundleAnalyzer) {
         productionPluginPipeline.push(
-            new (require('webpack-bundle-analyzer')).BundleAnalyzerPlugin(defaultBundleAnalyzerOptions),
+            new (requirePeerDependency('webpack-bundle-analyzer', config)).BundleAnalyzerPlugin(defaultBundleAnalyzerOptions),
         );
     }
 
@@ -51,11 +51,11 @@ export const getProductionConfig = (config: IBuildConfig): Configuration => {
         minimize: true,
         minimizer: [
             // JS uglification, minification and hoisting
-            new (require('terser-webpack-plugin'))({
+            new (requirePeerDependency('terser-webpack-plugin', config))({
                 ...defaultTerserOptions,
                 sourceMap: config.enableSourceMapInProduction || defaultEnableSourceMapInProduction,
             }),
-            new (require('optimize-css-assets-webpack-plugin'))({}),
+            new (requirePeerDependency('optimize-css-assets-webpack-plugin', config))({}),
         ],
         runtimeChunk: defaultRuntimeChunkOptions,
         splitChunks: defaultSplitChunksOptions,

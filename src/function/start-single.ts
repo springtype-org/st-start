@@ -4,15 +4,16 @@ import { getEnv } from './config-getters';
 import { getDevelopmentConfig } from './get-development-config';
 import { getProductionConfig } from './get-production-config';
 import { log } from './log';
+import { requirePeerDependency } from './require-peer-dependency';
 
 export const startSingle = async (config: IBuildConfig, resolve: Function, reject: Function): Promise<void> => {
     const webpackConfig = getEnv(config) === 'production' ? getProductionConfig(config) : getDevelopmentConfig(config);
-    const compiler = require('webpack')(webpackConfig);
+    const compiler = requirePeerDependency('webpack', config)(webpackConfig);
 
     if (getEnv(config) === 'development' && !config.serverMode) {
         log('Entering DevServer watch mode...');
 
-        const devServer = new (require('webpack-dev-server'))(compiler, {
+        const devServer = new (requirePeerDependency('webpack-dev-server', config))(compiler, {
             ...defaultDevServerOptions,
             publicPath: webpackConfig!.output!.publicPath,
             port: config.port || defaultDevServerPort,
@@ -23,7 +24,7 @@ export const startSingle = async (config: IBuildConfig, resolve: Function, rejec
             stats: webpackConfig.stats,
         });
 
-        devServer.listen(config.port || defaultDevServerPort, defaultDevServerHost, (err: any) => {
+        devServer.listen(config.port || defaultDevServerPort, config.host || defaultDevServerHost, (err: any) => {
             if (err) {
                 reject(err);
             }

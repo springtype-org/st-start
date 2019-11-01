@@ -1,7 +1,7 @@
 import { RuleSetRule } from 'webpack';
-import { defaultBabelOptions, defaultJSTranspileFileExcludes, defaultRawFileExtensions, defaultTestCSSTranspileFileExtensions, defaultTestJSTranspileFileExtensions } from '../defaults';
+import { defaultJSTranspileFileExcludes, defaultRawFileExtensions, defaultTestCSSTranspileFileExtensions, defaultTestJSTranspileFileExtensions } from '../defaults';
 import { IBuildConfig } from './../interface/ibuild-config';
-import { checkDependency } from './check-dependency';
+import { requirePeerDependency } from './require-peer-dependency';
 
 export const getModuleLoadingRules = (
     config: IBuildConfig,
@@ -13,8 +13,34 @@ export const getModuleLoadingRules = (
             exclude: defaultJSTranspileFileExcludes,
             use: [
                 {
-                    loader: require.resolve('babel-loader'),
-                    options: defaultBabelOptions,
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            requirePeerDependency('@babel/preset-env', config),
+                            [
+                                requirePeerDependency('@babel/preset-typescript', config),
+                                {
+                                    jsxPragma: 'tsx',
+                                },
+                            ],
+                            [
+                                requirePeerDependency('@babel/preset-react', config),
+                                {
+                                    pragma: 'tsx',
+                                    pragmaFrag: 'tsx',
+                                    throwIfNamespace: false,
+                                },
+                            ],
+                        ],
+                        plugins: [
+                            [requirePeerDependency('@babel/plugin-proposal-decorators', config), { legacy: true }],
+                            [requirePeerDependency('@babel/plugin-proposal-class-properties', config), { loose: true }],
+                            [requirePeerDependency('@babel/plugin-proposal-export-default-from', config)],
+                            requirePeerDependency('@babel/plugin-proposal-object-rest-spread', config),
+                            requirePeerDependency('@babel/plugin-transform-runtime', config),
+                            [requirePeerDependency('babel-plugin-minify-dead-code-elimination', config), { optimizeRawSize: true, keepFnName: true, keepClassName: true }],
+                        ],
+                    },
                 },
             ],
         },
@@ -24,7 +50,7 @@ export const getModuleLoadingRules = (
         },
     ];
 
-    if (config.enableRawFileImport && checkDependency('raw-loader')) {
+    if (config.enableRawFileImport) {
         moduleLoadingRules.push({
             test: config.rawFileImportExt || defaultRawFileExtensions,
             use: [{

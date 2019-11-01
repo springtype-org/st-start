@@ -7,7 +7,7 @@ export const defaultOutputPath = 'dist';
 // --- DEV SERVER
 
 export const defaultDevServerProtocol = process.env.HTTPS === 'true' ? 'https' : 'http';
-export const defaultDevServerHost = process.env.HOST || '0.0.0.0';
+export const defaultDevServerHost = process.env.HOST || 'localhost';
 export const defaultDevServerPort = process.env.PORT || '4444';
 
 export const defaultDevServerOptions = {
@@ -44,33 +44,7 @@ export const defaultJSTranspileFileExcludes = /node_modules/;
 export const defaultOutputFileNamePattern = '[name].[hash].js';
 export const defaultModuleResolveFileExtensions = ['.tsx', '.ts', '.js', '.jsm', '.jsx'];
 
-export const defaultBabelOptions = {
-    presets: [
-        '@babel/preset-env',
-        [
-            '@babel/preset-typescript',
-            {
-                jsxPragma: 'tsx',
-            },
-        ],
-        [
-            '@babel/preset-react',
-            {
-                pragma: 'tsx',
-                pragmaFrag: 'tsx',
-                throwIfNamespace: false,
-            },
-        ],
-    ],
-    plugins: [
-        ['@babel/plugin-proposal-decorators', { legacy: true }],
-        ['@babel/plugin-proposal-class-properties', { loose: true }],
-        ['@babel/plugin-proposal-export-default-from'],
-        '@babel/proposal-object-rest-spread',
-        '@babel/plugin-transform-runtime',
-        ['babel-plugin-minify-dead-code-elimination', { optimizeRawSize: true, keepFnName: true, keepClassName: true }],
-    ],
-};
+
 
 // --- CSS, SASS/SCSS, PostCSS
 

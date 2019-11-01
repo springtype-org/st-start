@@ -5,9 +5,12 @@ import * as commander from 'commander';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { defaultCustomConfigFileName } from './defaults';
+import { enableDefaultFeatures } from './function/enable-default-features';
+import { installPeerDependencies } from './function/install-peer-dependencies';
 import { log } from './function/log';
 import { start } from './function/start';
 import { IBuildConfig } from './interface/ibuild-config';
+
 
 const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8'));
 
@@ -72,6 +75,13 @@ const program = new commander.Command(packageJson.name)
         log(`Using local config file: ${configFile}`);
         config = require(configFile) || {};
     }
+
+    enableDefaultFeatures(config);
+
+    log(`Installing required peer dependencies...`);
+
+    // make sure peer dependencies are installed locally
+    installPeerDependencies(config);
 
     try {
         start(config);

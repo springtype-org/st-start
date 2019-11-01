@@ -1,8 +1,8 @@
 import { RuleSetRule } from 'webpack';
 import { defaultCSSOutputFileNamePattern } from './../defaults';
 import { IBuildConfig } from './../interface/ibuild-config';
-import { checkDependency } from './check-dependency';
 import { getEnableSourceMaps } from './config-getters';
+import { requirePeerDependency } from './require-peer-dependency';
 
 export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> => {
     const postCSSEnvPresetOptions: any = {};
@@ -13,14 +13,14 @@ export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> =
 
     const postCSSPlugins: Array<any> = [];
 
-    if (config.enablePostCSS && checkDependency('postcss-preset-env')) {
+    if (config.enablePostCSS) {
         postCSSPlugins.push(
-            require('postcss-preset-env')(postCSSEnvPresetOptions)
+            requirePeerDependency('postcss-preset-env', config)(postCSSEnvPresetOptions)
         )
     }
 
-    if (config.enablePostCSSLostGrid && checkDependency('lost')) {
-        postCSSPlugins.push(require('lost'));
+    if (config.enablePostCSSLostGrid) {
+        postCSSPlugins.push(requirePeerDependency('lost', config));
     }
 
     const styleLoadingRules: Array<RuleSetRule> = [
@@ -28,7 +28,7 @@ export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> =
         // import * as style from 'foo.css';
         // console.log(style.bar); // "bar-foo-3hg4z"
         {
-            loader: 'style-loader',
+            loader: 'style-loader'
         },
 
         // enables CSS modules support
@@ -46,7 +46,7 @@ export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> =
         },
     ];
 
-    if (config.enablePostCSS && checkDependency('postcss-loader')) {
+    if (config.enablePostCSS) {
         styleLoadingRules.push({
             loader: 'postcss-loader',
             options: {
@@ -56,7 +56,7 @@ export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> =
         });
     }
 
-    if (config.enableSass && checkDependency('sass-loader')) {
+    if (config.enableSass) {
         styleLoadingRules.push({
             loader: 'sass-loader',
             options: {

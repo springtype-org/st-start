@@ -1,27 +1,19 @@
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { Configuration } from 'webpack';
 import { defaultDevTool, defaultModuleResolveFileExtensions, defaultOutputFileNamePattern, defaultPublicPath, defaultStatsConfig } from '../defaults';
 import { IBuildConfig } from '../interface/ibuild-config';
-import { checkDependency } from './check-dependency';
-import { getContextPath, getEnv, getIndexTSDefaultPath, getIndexTSXDefaultPath, getOutputPath } from './config-getters';
+import { getContextPath, getEnv, getIndexTSDefaultPath, getIndexTSXDefaultPath, getInputPath, getOutputPath } from './config-getters';
 import { getModuleLoadingRules } from './get-module-loading-rules';
 import { getStyleLoadingRules } from './get-style-loading-rules';
 import { log } from './log';
+import { notifyOnError } from './notify-on-error';
+import { requirePeerDependency } from './require-peer-dependency';
 import { stringifyDefinitions } from './stringify-definitions';
 
 export const getBaseConfig = (config: IBuildConfig): Configuration => {
     const webpackConfig: Partial<Configuration> = {};
 
-    // activate default features
-    config.enableSass = config.enableSass !== false;
-    config.enablePostCSS = config.enablePostCSS !== false;
-    config.enablePostCSSAutoPrefixing = config.enablePostCSSAutoPrefixing !== false;
-    config.enablePostCSSLostGrid = config.enablePostCSSLostGrid !== false;
-    config.enableRawFileImport = config.enableRawFileImport !== false;
-    config.enableBundleAnalyzer = config.enableBundleAnalyzer !== false;
-    config.enableDesktopNotifications = config.enableDesktopNotifications !== false;
-    config.enableSourceMapInProduction = config.enableSourceMapInProduction !== false;
 
     webpackConfig.mode = getEnv(config);
     webpackConfig.context = getContextPath(config);
@@ -30,7 +22,7 @@ export const getBaseConfig = (config: IBuildConfig): Configuration => {
     const indexTSXDefaultPath = getIndexTSXDefaultPath(config);
     const indexTSDefaultPath = getIndexTSDefaultPath(config);
     const defaultIndexTSXExists = existsSync(indexTSXDefaultPath);
-    
+
     let entryPointFile = indexTSDefaultPath;
 
     if (defaultIndexTSXExists) {
@@ -42,9 +34,19 @@ export const getBaseConfig = (config: IBuildConfig): Configuration => {
     }
 
     if (!existsSync(entryPointFile)) {
+        if (!existsSync(getInputPath(config))) {
+            mkdirSync(getInputPath(config));
+        }
+
         writeFileSync(entryPointFile, readFileSync(resolve(__dirname, '..', 'index.tsx'), 'utf8'));
         log(`Entry point file did not exist. Created one: ${entryPointFile}`);
     }
+
+    webpackConfig.resolveLoader = {
+
+        // resolve loaders from local directory
+        modules: [resolve(getContextPath(config), 'node_modules')]
+    };
 
     webpackConfig.entry = {
         main: [entryPointFile],
@@ -57,17 +59,17 @@ export const getBaseConfig = (config: IBuildConfig): Configuration => {
     };
 
     webpackConfig.plugins = [
-        new (require('webpack')).DefinePlugin({
+        new (requirePeerDependency('webpack', config)).DefinePlugin({
             ...(stringifyDefinitions(config.definitions) || {}),
             'process.env.NODE_ENV': JSON.stringify(getEnv(config)),
         }),
-        new (require('error-overlay-webpack-plugin'))(),
+        new (requirePeerDependency('error-overlay-webpack-plugin', config))(),
     ];
 
-    if (config.enableDesktopNotifications && checkDependency('node-notifier')) {
+    if (config.enableDesktopNotifications) {
         webpackConfig.plugins.push(
-            new (require('friendly-errors-webpack-plugin'))({
-                onErrors: notifyOnError,
+            new (requirePeerDependency('friendly-errors-webpack-plugin', config))({
+                onErrors: (severity: string, errors: Array<any>) => notifyOnError(severity, errors, config),
             }),
         );
     }
@@ -84,27 +86,4 @@ export const getBaseConfig = (config: IBuildConfig): Configuration => {
         rules: getModuleLoadingRules(config, getStyleLoadingRules(config)),
     };
     return webpackConfig;
-};
-
-export const notifyOnError = (severity: string, errors: Array<any>) => {
-    const notificationIcon = resolve(__dirname, '..', 'springtype.png');
-    if (severity !== 'error') {
-        return;
-    }
-
-    let message: Array<string> = errors[0].message.split('\n')[0].split(/: /g);
-    let file = errors[0].file || '';
-
-    if (file.indexOf('multi') === 0) {
-        const fileSplits = file.split(' ');
-        file = fileSplits[fileSplits.length - 1];
-    }
-
-    // show desktop notification
-    require('node-notifier').notify({
-        title: `${errors[0].name}`,
-        message: message[message.length - 1],
-        subtitle: file,
-        icon: notificationIcon,
-    });
 };
