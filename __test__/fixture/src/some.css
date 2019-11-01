@@ -1,3 +1,5 @@
+$bg: #ccc;
+
 .photo {
     width: 200px;
 }
@@ -17,8 +19,8 @@
     composes: visuallyHidden from './utils.css';
 }
 
-.AlignmentSection {
-    background: #f0d2d1;
+.AlignmentSection1 {
+    background: $bg;
     height: 300px;
     lost-align: center;
 

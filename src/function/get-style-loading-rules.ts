@@ -1,5 +1,5 @@
 import { RuleSetRule } from 'webpack';
-import { defaultCSSOutputFileNamePattern } from './../defaults';
+import { defaultCSSOutputFileNamePattern } from '../defaults';
 import { IBuildConfig } from './../interface/ibuild-config';
 import { getEnableSourceMaps } from './config-getters';
 import { requirePeerDependency } from './require-peer-dependency';
@@ -14,9 +14,8 @@ export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> =
     const postCSSPlugins: Array<any> = [];
 
     if (config.enablePostCSS) {
-        postCSSPlugins.push(
-            requirePeerDependency('postcss-preset-env', config)(postCSSEnvPresetOptions)
-        )
+        postCSSPlugins.push(requirePeerDependency('postcss-preset-env', config)(postCSSEnvPresetOptions));
+        postCSSPlugins.push(requirePeerDependency('postcss-nested', config));
     }
 
     if (config.enablePostCSSLostGrid) {
@@ -28,7 +27,14 @@ export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> =
         // import * as style from 'foo.css';
         // console.log(style.bar); // "bar-foo-3hg4z"
         {
-            loader: 'style-loader'
+            loader: 'style-loader',
+        },
+        {
+            loader: 'dts-css-modules-loader',
+            options: {
+                namedExport: true,
+                banner: '// This file is generated automatically',
+            },
         },
 
         // enables CSS modules support
