@@ -24,7 +24,7 @@ export const startSingle = async (config: IBuildConfig, resolve: Function, rejec
             stats: webpackConfig.stats,
         });
 
-        devServer.listen(config.port || defaultDevServerPort, config.host || defaultDevServerHost, (err: any) => {
+        devServer.listen(config.port || defaultDevServerPort, config.host || defaultDevServerHost, (err: any) => {
             if (err) {
                 reject(err);
             }

@@ -11,7 +11,6 @@ import { log } from './function/log';
 import { start } from './function/start';
 import { IBuildConfig } from './interface/ibuild-config';
 
-
 const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8'));
 
 const program = new commander.Command(packageJson.name)
@@ -73,7 +72,7 @@ const program = new commander.Command(packageJson.name)
 
     if (existsSync(configFile)) {
         log(`Using local config file: ${configFile}`);
-        config = require(configFile) || {};
+        config = { ...require(configFile), ...config /* apply runtime config */ } || {};
     }
 
     enableDefaultFeatures(config);
