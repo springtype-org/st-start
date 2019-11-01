@@ -2,14 +2,12 @@
 
 import chalk from 'chalk';
 import * as commander from 'commander';
-import { existsSync, readFileSync } from 'fs';
-import { resolve } from 'path';
-import { defaultCustomConfigFileName } from './defaults';
-import { enableDefaultFeatures } from './function/enable-default-features';
-import { installPeerDependencies } from './function/install-peer-dependencies';
-import { log } from './function/log';
-import { start } from './function/start';
-import { IBuildConfig } from './interface/ibuild-config';
+import {existsSync, readFileSync} from 'fs';
+import {resolve} from 'path';
+import {defaultCustomConfigFileName} from './defaults';
+import {log} from './function/log';
+import {start} from './function/start';
+import {IBuildConfig} from './interface/ibuild-config';
 
 const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8'));
 
@@ -51,39 +49,33 @@ const program = new commander.Command(packageJson.name)
         );
     }
 
-    const configFile = program.config ? resolve(program.config) : resolve(process.cwd(), defaultCustomConfigFileName);
+    const configFile: string = program.config ? resolve(program.config) : resolve(process.cwd(), defaultCustomConfigFileName);
 
-    let config: IBuildConfig = {};
+    let runtimeConfiguration: IBuildConfig = {};
 
     if (program.env) {
         log(`Using CLI-provided environment: ${program.env}`);
-        config.env = program.env;
+        runtimeConfiguration.env = program.env;
     }
 
     if (!!program.server) {
         log('Enabling server mode: Frontend DevServer disabled.');
-        config.serverMode = true;
+        runtimeConfiguration.serverMode = true;
     }
 
     if (!!program.watch) {
         log('Enabling watch mode: Making sure DevServer or watch is running (depending on server mode, environment).');
-        config.watchMode = true;
+        runtimeConfiguration.watchMode = true;
     }
 
+    let configuration: IBuildConfig | Array<IBuildConfig> = {};
     if (existsSync(configFile)) {
         log(`Using local config file: ${configFile}`);
-        config = { ...require(configFile), ...config /* apply runtime config */ } || {};
+        configuration = require(configFile) || {};
     }
 
-    enableDefaultFeatures(config);
-
-    log(`Installing required peer dependencies...`);
-
-    // make sure peer dependencies are installed locally
-    installPeerDependencies(config);
-
     try {
-        start(config);
+        start(runtimeConfiguration, configuration);
     } catch (e) {
         log(`Fatal: Uncaught error: ${e.message}. Exiting.`, 'error');
     }

@@ -49,11 +49,11 @@
         "@types/webpack": "^4.39.8",
         "jest": "^24.9.0",
         "prettier": "^1.18.2",
-        "st-rm-rf": "^2.0.0-alpha.1",
         "st-run": "^2.0.0-alpha.17",
         "testcafe": "^1.6.0",
         "ts-jest": "^24.1.0",
-        "typescript": "^3.6.4"
+        "typescript": "^3.6.4",
+        "st-rm-rf": "^2.0.0-alpha.5"
     },
     "bundledDependencies": [
         "cross-spawn",
