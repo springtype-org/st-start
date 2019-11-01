@@ -1,68 +1,70 @@
 {
-    "name": "st-start",
-    "version": "2.0.0-beta.2",
-    "publishConfig": {
-        "access": "public"
-    },
-    "bin": {
-        "st-start": "./cli.js"
-    },
-    "keywords": [
-        "SpringType",
-        "bundler",
-        "compiler",
-        "dev server",
-        "CLI",
-        "HMR",
-        "node bundler",
-        "sass",
-        "postcss",
-        "lost",
-        "lost grid",
-        "typescript",
-        "typescript bundler",
-        "babel",
-        "webpack",
-        "zero configuration",
-        "framework agnostic"
-    ],
-    "description": "An opinionated, zero configuration TypeScript project bundler & starter. Supports Node.js as well.",
-    "scripts": {
-        "clean": "st-run st-rm-rf dist",
-        "prebuild": "yarn clean",
-        "build": "st-run system:tsc ++ st-cp package.json node_modules sample-config/index.html sample-config/index.tsx springtype.png dist",
-        "test": "jest --verbose",
-        "pree2e": "yarn test",
-        "e2e": "testcafe chrome:headless **/__e2e__/*",
-        "release": "npm login",
-        "postrelease": "npm publish"
-    },
-    "author": "Aron Homberg <info@aron-homberg.de>",
-    "license": "MIT",
-    "devDependencies": {
-        "@types/cross-spawn": "^6.0.1",
-        "@types/jest": "^24.0.21",
-        "@types/node": "^12.12.4",
-        "@types/node-notifier": "^5.4.0",
-        "@types/webpack": "^4.39.8",
-        "jest": "^24.9.0",
-        "prettier": "^1.18.2",
-        "st-rm-rf": "^2.0.0-alpha.1",
-        "st-run": "^2.0.0-alpha.17",
-        "testcafe": "^1.6.0",
-        "ts-jest": "^24.1.0",
-        "typescript": "^3.6.4"
-    },
-    "bundledDependencies": [
-        "cross-spawn",
-        "commander",
-        "envinfo",
-        "chalk"
-    ],
-    "dependencies": {
-        "chalk": "^2.4.2",
-        "commander": "^4.0.0",
-        "cross-spawn": "^7.0.1",
-        "envinfo": "^7.4.0"
-    }
+  "name": "st-start",
+  "version": "2.0.0-beta.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "st-start": "./cli.js"
+  },
+  "keywords": [
+    "SpringType",
+    "bundler",
+    "compiler",
+    "dev server",
+    "CLI",
+    "HMR",
+    "node bundler",
+    "sass",
+    "postcss",
+    "lost",
+    "lost grid",
+    "typescript",
+    "typescript bundler",
+    "babel",
+    "webpack",
+    "zero configuration",
+    "framework agnostic"
+  ],
+  "description": "An opinionated, zero configuration TypeScript project bundler & starter. Supports Node.js as well.",
+  "scripts": {
+    "clean": "st-run st-rm-rf dist",
+    "prebuild": "yarn clean",
+    "build": "st-run system:tsc ++ st-cp package.json node_modules sample-config/index.html sample-config/index.tsx springtype.png dist",
+    "test": "jest --verbose",
+    "pree2e": "yarn test",
+    "e2e": "testcafe chrome:headless **/__e2e__/*",
+    "release": "npm login",
+    "postrelease": "npm publish"
+  },
+  "bugs": {
+    "url": "https://github.com/springtype-org/st-start/issues"
+  },
+  "author": "Aron Homberg <info@aron-homberg.de>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^24.0.21",
+    "@types/node": "^12.12.4",
+    "@types/node-notifier": "^5.4.0",
+    "@types/webpack": "^4.39.8",
+    "jest": "^24.9.0",
+    "prettier": "^1.18.2",
+    "st-rm-rf": "^2.0.0-alpha.1",
+    "st-run": "^2.0.0-alpha.17",
+    "testcafe": "^1.6.0",
+    "ts-jest": "^24.1.0",
+    "typescript": "^3.6.4"
+  },
+  "bundledDependencies": [
+    "cross-spawn",
+    "commander",
+    "envinfo",
+    "chalk"
+  ],
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "commander": "^4.0.0",
+    "cross-spawn": "^7.0.1",
+    "envinfo": "^7.4.0"
+  }
 }
