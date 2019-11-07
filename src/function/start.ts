@@ -8,13 +8,14 @@ export const start = async (
     runtimeConfiguration: IBuildConfig,
     config: IBuildConfig | Array<IBuildConfig> = {},
     length?: number,
+    taskNr?: number,
 ) => {
     return new Promise(async (resolve: Function, reject: Function) => {
         if (Array.isArray(config)) {
             try {
                 for (let i = 0; i < config.length; i++) {
                     log(`Building target ${i + 1} / ${config.length}...`);
-                    await start(runtimeConfiguration, config[i], config.length);
+                    await start(runtimeConfiguration, config[i], config.length, i);
                 }
                 log('Done building all targets.');
                 resolve();
@@ -25,10 +26,13 @@ export const start = async (
             try {
                 const configuration = { ...config, ...runtimeConfiguration };
                 enableDefaultFeatures(configuration);
-                log(`Installing required peer dependencies...`);
+
+                log(`Installing missing peer dependencies (based on features enabled in configuration)...`);
+
                 // make sure peer dependencies are installed locally
                 installPeerDependencies(configuration);
-                await startSingle(configuration, resolve, reject);
+
+                await startSingle(configuration, resolve, reject, taskNr);
                 if (!length) {
                     log('Done building target.');
                 }

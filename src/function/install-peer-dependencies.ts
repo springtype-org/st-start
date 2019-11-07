@@ -8,8 +8,8 @@ import { getPeerDependencies } from './get-peer-dependencies';
 export const installPeerDependencies = (config: IBuildConfig) => {
     const peerDependencies = getPeerDependencies(config);
     const missingPeerDependencies = [];
-    const devDependencies = JSON.parse(readFileSync(resolve(getContextPath(config), 'package.json'), 'utf8'))
-        .devDependencies;
+    const devDependencies =
+        JSON.parse(readFileSync(resolve(getContextPath(config), 'package.json'), 'utf8')).devDependencies || {};
 
     for (let dependency of peerDependencies) {
         if (!devDependencies[dependency.split('@^')[0]]) {

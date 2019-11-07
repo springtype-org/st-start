@@ -6,6 +6,7 @@ import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { defaultCustomConfigFileName } from './defaults';
 import { log } from './function/log';
+import { readDotEnv } from './function/read-dot-env';
 import { start } from './function/start';
 import { IBuildConfig } from './interface/ibuild-config';
 
@@ -14,8 +15,8 @@ const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 
 const program = new commander.Command(packageJson.name)
     .version(packageJson.version)
     .option('-c, --config <configFileName>', 'target a specific config file instead of st.config.js')
-    .option('-e, --env <env>', 'production | development - overrides the NODE_ENV setting')
-    .option('-s, --server', 'runs in server mode: no DevServer, only watch mode in development')
+    .option('-e, --env <env>', 'development (default) | production - overrides the NODE_ENV env varibale')
+    .option('-p, --platform <platform>', 'browser (default) | nodejs - overrides the NODE_PLATFORM env varibale')
     .option('-w, --watch', 'runs in watch mode: watches for changes')
     .option('-i, --info', 'print environment debug info')
     .allowUnknownOption()
@@ -55,14 +56,23 @@ const program = new commander.Command(packageJson.name)
 
     let runtimeConfiguration: IBuildConfig = {};
 
+    // read .env files
+    readDotEnv();
+
+    // CLI parameters override .env settings
+
     if (program.env) {
         log(`Using CLI-provided environment: ${program.env}`);
         runtimeConfiguration.env = program.env;
+        process.env.NODE_ENV = program.env;
     }
 
-    if (!!program.server) {
-        log('Enabling server mode: Frontend DevServer disabled.');
-        runtimeConfiguration.serverMode = true;
+    if (program.platform) {
+        if (program.platform === 'nodejs') {
+            log('Enabling server mode: Frontend DevServer disabled. Babel runtime set to: nodejs');
+            runtimeConfiguration.isNodeJsTarget = true;
+        }
+        process.env.NODE_PLATFORM = program.platform;
     }
 
     if (!!program.watch) {

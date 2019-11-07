@@ -1,3 +1,8 @@
+import { Environment } from './interface/environment';
+
+// --- RUNTIME
+export const defaultRuntimeEnvironment: Environment = 'development';
+
 // --- PROJECT LAYOUT
 
 export const defaultCustomConfigFileName = 'st.config.js';
@@ -39,12 +44,19 @@ export const defaultIndexHTMLTemplateParameters = {};
 
 // --- TS/TSX TO JS TRANSPILATION
 
-export const defaultTestJSTranspileFileExtensions = /(\.tsx?|\.js(x|m)?)$/;
+export const defaultTestJSTranspileFileExtensions = /(\.tsx?|\.js(x|m)?)$/i;
 export const defaultJSTranspileFileExcludes = /node_modules/;
-export const defaultOutputFileNamePattern = '[name].[hash].js';
-export const defaultModuleResolveFileExtensions = ['.tsx', '.ts', '.js', '.jsm', '.jsx'];
+export const defaultOutputFileNamePattern = 'static/js/[name].[contenthash:8].js';
+export const defaultChunkOutputFileNamePattern = 'static/js/[name].[contenthash:8].chunk.js';
+export const defaultModuleResolveFileExtensions = ['.tsx', '.ts', '.js', '.mjs', '.jsx'];
+export const defaultIgnoreFilePatterns = [];
+export const defaultJSXPragma = 'tsx';
+export const defaultCoreJsVersion = 3;
 
+// --- IMAGE INLINING
 
+export const defaultInlineImageExtensions = [/\.gif$/i, /\.jpe?g$/i, /\.png$/i];
+export const defaultInlineMaxFileSize = 10; // KiB
 
 // --- CSS, SASS/SCSS, PostCSS
 
@@ -53,7 +65,7 @@ export const defaultCSSOutputFileNamePattern = '[name]-[local]-[hash:base64:5]';
 
 // --- RAW FILE IMPORTS
 
-export const defaultRawFileExtensions = /\.txt|\.svg$/i;
+export const defaultRawFileExcludeExtensions = [/\.json$/i, /\.html$/i];
 
 // --- DIAGNOSTIC MESSAGES IN TERMINAL
 
@@ -82,8 +94,12 @@ export const defaultBrotliCompressionOptions = {
     mode: 1,
 };
 
+export const defaultInlineRuntimeChunks = true;
+
 export const defaultBundleAnalyzerOptions = {
     analyzerMode: 'static',
+    reportFilename: 'report.html',
+    openAnalyzer: true,
 };
 
 export const defaultMinifyOptions = {
@@ -103,23 +119,39 @@ export const defaultTerserOptions = {
     cache: true,
     parallel: true,
     terserOptions: {
+        parse: {
+            ecma: 8,
+        },
+        compress: {
+            ecma: 5,
+            warnings: false,
+            comparisons: false,
+            inline: 2,
+        },
+        mangle: {
+            safari10: true,
+        },
         keep_classnames: true,
         keep_fnames: true,
         output: {
+            ecma: 5,
             comments: false,
+            ascii_only: true,
         },
     },
 };
 
 export const defaultRuntimeChunkOptions: any = {
-    name: 'runtime',
+    name: (entrypoint: any) => `runtime-${entrypoint.name}`,
 };
 
 export const defaultSplitChunksOptions: any = {
     chunks: 'all',
+    name: false,
 };
 
 // --- DEBUGGING
 
-export const defaultDevTool = 'cheap-module-source-map';
+export const defaultDevelopmentDevTool = 'cheap-module-source-map';
+export const defaultProductionDevTool = 'source-map';
 export const defaultEnableSourceMapInProduction = true;

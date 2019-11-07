@@ -1,39 +1,72 @@
+import { Environment } from './environment';
+
 export interface IBuildConfig {
-
-
     // --- RUNTIME
 
     // overrides process.env.NODE_ENV
-    env?: 'production' | 'development'; // default: 'development'
+    env?: Environment; // default: 'development'
 
-    // disables the frontend DevServer (only watch mode enabled) 
-    serverMode?: boolean; // default: false
+    // builds for the Node.js runtime environment, disables DevServer, etc.
+    isNodeJsTarget?: boolean; // default: false
 
     // makes sure DevServer or watch is running (depending on server mode, environment)
     watchMode?: boolean; // default: false
-    
 
     // --- PROJECT LAYOUT
 
-    // path to look for sources
-    inputPath?: string; // default: 'src'
-
-    // output path
-    outputPath?: string; // default: 'dist'
-
-    // context directory location of the project ("In which folder to operate?")
-    context?: string; // default: process.cwd()
-
     // entrypoint file, auto-generated as $outputPath/index.tsx if not existing
+    // e.g. "src/alt-index.ts"
     entryPoint?: string; // default: $outputPath/index.ts or $outputPath/index.tsx, wether it exists
 
+    // where to read the sources from
+    inputPath?: string; // default: 'src'
 
-    // --- TS/TSX TO JS TRANSPILATION 
+    // where to write the bundling results to
+    outputPath?: string; // default: 'dist'
 
+    // generates a service worker script for offline (PWA) support
+    // it pre-caches the HTML and static files (js, images etc.)
+    // that are part of the bundle and keeps them up-to-date
+    // only applied in production mode
+    enableServiceWorkerScript?: boolean; // default: false
+
+    // configures the build system for single file output, explicitly using the name provided
+    // Disables chunking and transpiles the entryPoint directly to the path defined
+    // e.g. "dist/background.js"
+    singleFileOutput?: string; // default: undefined
+
+    // context directory location of the project ("In which folder to operate?")
+    // i.e. this folder may contain the "src" folder
+    cwd?: string; // default: process.cwd()
+
+    // files to ignore in the process of bundling
+    // e.g. /^\.\/locale$/
+    ignoreFilePattern?: RegExp; // default: undefined
+
+    // in which module folder(s) to ignore files in e.g. /moment$/
+    ignoreFileContextPattern?: RegExp; // default: undefined
+
+    // activates yarn Plug'n'Play module resolution
+    enableYarnPnp?: boolean; // default: false
+
+    // --- TS/TSX TO JS TRANSPILATION
+
+    // enables eslint linting and auto-formatting. Requires a .eslintrc.js file to be existing
+    // somewhere in the project path
+    enableLinting?: boolean; // default: false
+
+    // checks the code for TypeScript typing errors
+    enableTypeScriptTypeChecking?: boolean; // default: false
+
+    // path to the "tsconfig.json" file if enableTypeScriptTypeChecking is set
+    typeScriptTypeCheckingConfig?: string; // default: undefined
+
+    // pattern to match for files to transpile
     testJSTranspileFileExtensions?: RegExp; // default: /(\.tsx?|\.js(x|m)?)$/
 
-    // output file name pattern
-    outputFileNamePattern?: string; // default: [name].[hash].js
+    // output file name patterns
+    outputFileNamePattern?: string; // default: static/js/[name].[contenthash:8].js
+    outputChunkFileNamePattern?: string; // default: static/js/[name].[contenthash:8].chunk.js
 
     // list of file extensions to consider for module resolution (import/require dependencies)
     moduleResolutionFileExtensions?: Array<string>; // default: ['.tsx', '.ts', '.js', '.jsm', '.jsx']
@@ -44,8 +77,7 @@ export interface IBuildConfig {
         [key: string]: any;
     }; // default: { 'process.env.NODE_ENV': JSON.stringify(config.env || process.env.NODE_ENV) }
 
-
-    // --- INDEX HTML 
+    // --- INDEX HTML
 
     // path for public relative imports
     publicPath?: string; // default: /
@@ -74,7 +106,6 @@ export interface IBuildConfig {
         [name: string]: any;
     }; // default: {}
 
-
     // --- DEV SERVER, LIVE RELOAD, HOT MODULE REPLACEMENT (MHR)
 
     // default path the devServer tries to load assets from
@@ -87,13 +118,26 @@ export interface IBuildConfig {
     port?: number; // default: 4444
 
     // tells the server, where it runs, like: myapp.test:80
-    public?: string; // default: window.location
+    publicUrl?: string; // default: window.location
 
     // allows to configure API proxying, e.g. { '/api': 'http://localhost:3000' }
     proxy?: {
         [apiEndpointUrl: string]: string;
     }; // default: {}
 
+    // --- IMAGE INLINING
+
+    // reads the images from disk and inlines them in a JavaScript bundle so you
+    // can import them as import * as meme from "./meme.gif"; ...; <img src={meme} />
+    // because they are imported as a base64 data URL
+    enableImageInlining?: boolean; // default: false
+
+    // specifies the image file extensions to inline
+    inlineImageExtensions?: Array<RegExp>; // default: [/\.gif$/i, /\.jpe?g$/i, /\.png$/i]
+
+    // maximum size of image that is suitable for data URL inlining
+    // caution: inlining can hugely increase JS output bundle size
+    inlineImageMaxFileSize?: number; // default: 10 (KiB)
 
     // --- RAW FILE IMPORTS
 
@@ -101,10 +145,10 @@ export interface IBuildConfig {
     // necessary for i18n JSON file loading support
     enableRawFileImport?: boolean; // default: true
 
-    // file extensions to recognize as raw files.
-    // Be careful not to confuse with module dependency file extensions like .ts, .tsx, .css etc.!
-    rawFileImportExt?: RegExp; // default: /\.txt|\.svg$/i
-
+    // file extensions to NOT recognize as raw files imports, so they get processed well by
+    // other loaders internally. All file extensions of testJSTranspileFileExtensions are excluded as well.
+    // File extensions that aren't excluded are file-loaded.
+    rawFileExcludeImportExtensions?: Array<RegExp>; // default: [/\.json$/i, /\.html$/i]
 
     // --- STYLING, CSS, SASS/SCSS, PostCSS SUPPORT
 
@@ -128,18 +172,20 @@ export interface IBuildConfig {
     // activates lostgrid.org support for CSS, SASS/SCSS and PostCSS files
     enablePostCSSLostGrid?: boolean; // default: true
 
+    // generates .d.ts files for each CSS/SASS/SCSS file you import
+    // this allows selector names to be auto-completed for imported CSS modules
+    enableCssImportTypeDeclaration?: boolean; // default: true
 
     // --- PWA SUPPORT
 
     // generates a .manifest file for offline caching in PWA's
     enableManifestGeneration?: boolean; // default: false
 
-
     // --- PRODUCTION OPTIMIZATIONS
 
     // writes out .gz files next to each asset in $outputPath
     // useful for fast file delivery by servers
-    enableGzipCompression?: boolean; // default: false
+    enableGzipCompression?: boolean; // default: true
 
     // writes out .br files next to each asset in $outputPath
     // useful for fast file delivery by servers
@@ -149,6 +195,15 @@ export interface IBuildConfig {
     // generates a graph chart in $outputPath/graph.html and opens it automatically
     enableBundleAnalyzer?: boolean; // default: true
 
+    // enables / disables the auto-opening of the report
+    bundleAnalyzerAutoOpen?: boolean; // default: true
+
+    // filename or even relative path
+    bundleAnalyzerReportFile?: string; // default: report.html
+
+    // runtime chunk files can be inlined in the index.html instead of being
+    // loaded externally
+    inlineRuntimeChunks?: boolean; // default: true
 
     // --- DEBUGGING
 

@@ -2,26 +2,14 @@ import { featureToPeerDependencyMap, peerDependencies } from '../peer-dependenci
 import { IBuildConfig } from './../interface/ibuild-config';
 
 export const getPeerDependencies = (config: IBuildConfig): Array<string> => {
-    let requiredPeerDependencies = featureToPeerDependencyMap.base;
+    let requiredPeerDependencies = [];
 
-    if (config.enableBrotliCompression) {
-        requiredPeerDependencies.push(...featureToPeerDependencyMap.brotliCompression);
+    if (config.enableSass) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.sass);
     }
 
-    if (config.enableGzipCompression) {
-        requiredPeerDependencies.push(...featureToPeerDependencyMap.gzipCompression);
-    }
-
-    if (config.enableBundleAnalyzer) {
-        requiredPeerDependencies.push(...featureToPeerDependencyMap.dependencyAnalyzer);
-    }
-
-    if (config.enableDesktopNotifications) {
-        requiredPeerDependencies.push(...featureToPeerDependencyMap.notifications);
-    }
-
-    if (config.enableManifestGeneration) {
-        requiredPeerDependencies.push(...featureToPeerDependencyMap.manifest);
+    if (config.enableCssImportTypeDeclaration) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.cssImportTypeDeclaration);
     }
 
     if (config.enablePostCSS) {
@@ -32,16 +20,44 @@ export const getPeerDependencies = (config: IBuildConfig): Array<string> => {
         requiredPeerDependencies.push(...featureToPeerDependencyMap.autoprefixer);
     }
 
+    if (config.enableBrotliCompression) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.brotliCompression);
+    }
+
+    if (config.enableManifestGeneration) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.manifest);
+    }
+
+    if (config.enableBundleAnalyzer) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.dependencyAnalyzer);
+    }
+
     if (config.enablePostCSSLostGrid) {
         requiredPeerDependencies.push(...featureToPeerDependencyMap.lostGrid);
     }
 
-    if (config.enableRawFileImport) {
-        requiredPeerDependencies.push(...featureToPeerDependencyMap.rawLoader);
+    if (config.enableDesktopNotifications) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.notifications);
     }
 
-    if (config.enableSass) {
-        requiredPeerDependencies.push(...featureToPeerDependencyMap.sass);
+    if (config.enableLinting) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.linting);
+    }
+
+    if (config.enableYarnPnp) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.yarnPnp);
+    }
+
+    if (config.enableServiceWorkerScript) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.serviceWorkerScript);
+    }
+
+    if (config.enableImageInlining) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.imageInlining);
+    }
+
+    if (config.enableTypeScriptTypeChecking) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.typeScriptTypeChecking);
     }
 
     // substitute dependency names by dependency@version to guarantee comparibility

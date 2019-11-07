@@ -16,6 +16,9 @@ import * as styles2 from './some.css';
 @component()
 export class Demo extends st.component {
     render() {
+
+        console.log('ST_TEST env', process.env.ST_TEST);
+
         return (
             <div class={styles2.AlignmentSection1}>
                 <div>1</div>

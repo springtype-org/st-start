@@ -1,36 +1,53 @@
+import { existsSync } from 'fs';
 import { defaultDevServerHost, defaultDevServerOptions, defaultDevServerPort } from '../defaults';
 import { IBuildConfig } from '../interface/ibuild-config';
 import { getEnv } from './config-getters';
 import { getDevelopmentConfig } from './get-development-config';
+import { getEntryPointFilePath } from './get-entrypoint-filepath';
 import { getProductionConfig } from './get-production-config';
 import { log } from './log';
-import { requirePeerDependency } from './require-peer-dependency';
+import { requireFromContext } from './require-from-context';
 
-export const startSingle = async (config: IBuildConfig, resolve: Function, reject: Function): Promise<void> => {
-    const webpackConfig = getEnv(config) === 'production' ? getProductionConfig(config) : getDevelopmentConfig(config);
-    const compiler = requirePeerDependency('webpack', config)(webpackConfig);
+export const startSingle = async (
+    config: IBuildConfig,
+    resolve: Function,
+    reject: Function,
+    taskNr?: number,
+): Promise<void> => {
+    const webpackConfig = getEnv() === 'production' ? getProductionConfig(config) : getDevelopmentConfig(config);
+    const webpack = requireFromContext('webpack', config)(webpackConfig);
+    const devServerAlreadyRunning = taskNr !== 0;
+    const entryPointFile = getEntryPointFilePath(config);
 
-    if (getEnv(config) === 'development' && !config.serverMode) {
+    if (!existsSync(entryPointFile)) {
+        log(`Entry point file: ${entryPointFile} does not exist. Skipping.`, 'error');
+        return;
+    }
+
+    if (getEnv() === 'development' && !config.isNodeJsTarget && !devServerAlreadyRunning) {
         log('Entering DevServer watch mode...');
 
-        const devServer = new (requirePeerDependency('webpack-dev-server', config))(compiler, {
+        const devServer = new (requireFromContext('webpack-dev-server', config))(webpack, {
             ...defaultDevServerOptions,
             publicPath: webpackConfig!.output!.publicPath,
             port: config.port || defaultDevServerPort,
             proxy: config.proxy,
-            public: config.public,
+            public: config.publicUrl,
             disableHostCheck: config.proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
             contentBase: config.assetsPath || webpackConfig.context,
             stats: webpackConfig.stats,
         });
 
-        devServer.listen(config.port || defaultDevServerPort, config.host || defaultDevServerHost, (err: any) => {
-            if (err) {
-                reject(err);
-            }
-        });
+        devServer.listen(config.port || defaultDevServerPort, config.host || defaultDevServerHost);
     } else {
-        compiler.run((err: any, stats: any) => {
+        if (devServerAlreadyRunning) {
+            log(
+                'DevServer has been started already. Falling back to default build mode (first come, first serve).',
+                'warning',
+            );
+        }
+
+        webpack.run((err: any, stats: any) => {
             if (err || stats.hasErrors()) {
                 reject(err || stats.toJson('minimal'));
             } else {

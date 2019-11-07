@@ -1,89 +1,177 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { resolve } from 'path';
-import { Configuration } from 'webpack';
-import { defaultDevTool, defaultModuleResolveFileExtensions, defaultOutputFileNamePattern, defaultPublicPath, defaultStatsConfig } from '../defaults';
+import { relative, resolve } from 'path';
+import webpack, { Configuration } from 'webpack';
+import { defaultChunkOutputFileNamePattern, defaultDevelopmentDevTool, defaultModuleResolveFileExtensions, defaultOutputFileNamePattern, defaultProductionDevTool, defaultPublicPath, defaultStatsConfig } from '../defaults';
 import { IBuildConfig } from '../interface/ibuild-config';
-import { getContextPath, getEnv, getIndexTSDefaultPath, getIndexTSXDefaultPath, getInputPath, getOutputPath } from './config-getters';
+import { Platform } from '../interface/platform';
+import { defaultInputPath } from './../defaults';
+import { getContextNodeModulesPath, getContextPath, getDefinitionsStringified, getEnv, getOutputPath, isDevelopment, isProduction } from './config-getters';
+import { getEntryPointFilePath } from './get-entrypoint-filepath';
 import { getModuleLoadingRules } from './get-module-loading-rules';
+import { getPlatform } from './get-platform';
 import { getStyleLoadingRules } from './get-style-loading-rules';
 import { log } from './log';
 import { notifyOnError } from './notify-on-error';
-import { requirePeerDependency } from './require-peer-dependency';
-import { stringifyDefinitions } from './stringify-definitions';
+import { requireFromContext } from './require-from-context';
 
 export const getBaseConfig = (config: IBuildConfig): Configuration => {
     const webpackConfig: Partial<Configuration> = {};
 
+    if (config.isNodeJsTarget) {
+        process.env.NODE_PLATFORM = <Platform>'nodejs';
+    }
 
-    webpackConfig.mode = getEnv(config);
+    const platform = getPlatform();
+    const env = (config.env = getEnv());
+
+    // webpack mode doesn't support environment 'test'
+    // we fall back to 'production' in this case
+    webpackConfig.mode = env === 'test' ? 'production' : env;
     webpackConfig.context = getContextPath(config);
     webpackConfig.watch = !!config.watchMode;
 
-    const indexTSXDefaultPath = getIndexTSXDefaultPath(config);
-    const indexTSDefaultPath = getIndexTSDefaultPath(config);
-    const defaultIndexTSXExists = existsSync(indexTSXDefaultPath);
-
-    let entryPointFile = indexTSDefaultPath;
-
-    if (defaultIndexTSXExists) {
-        entryPointFile = indexTSXDefaultPath;
+    if (platform === 'nodejs') {
+        webpackConfig.target = 'node';
     }
 
-    if (config.entryPoint) {
-        entryPointFile = resolve(config.entryPoint);
-    }
+    const entryPointFile = getEntryPointFilePath(config);
+    webpackConfig.bail = isProduction();
 
-    if (!existsSync(entryPointFile)) {
-        if (!existsSync(getInputPath(config))) {
-            mkdirSync(getInputPath(config));
-        }
-
-        writeFileSync(entryPointFile, readFileSync(resolve(__dirname, '..', 'index.tsx'), 'utf8'));
-        log(`Entry point file did not exist. Created one: ${entryPointFile}`);
-    }
-
-    webpackConfig.resolveLoader = {
-
-        // resolve loaders from local directory
-        modules: [resolve(getContextPath(config), 'node_modules')]
-    };
+    log(`Entrypoint file is: ${entryPointFile}`);
 
     webpackConfig.entry = {
         main: [entryPointFile],
     };
 
+    let fileName = config.outputFileNamePattern || defaultOutputFileNamePattern;
+    let outputPath = config.outputPath || resolve(webpackConfig.context, getOutputPath(config));
+    let chunkFileName = config.outputChunkFileNamePattern || defaultChunkOutputFileNamePattern;
+
+    if (config.singleFileOutput) {
+        // override by single file output name
+        fileName = config.singleFileOutput;
+        outputPath = getContextPath(config);
+        // chunkFileName is not set here, because chunking is disabled in singleFileOutput mode
+    }
+
+    log(`Output path is: ${outputPath}`);
+
     webpackConfig.output = {
-        path: config.outputPath || resolve(webpackConfig.context, getOutputPath(config)),
-        filename: config.outputFileNamePattern || defaultOutputFileNamePattern,
+        pathinfo: isDevelopment(),
+        futureEmitAssets: true,
+        devtoolModuleFilenameTemplate: isProduction()
+            ? info => relative(config.inputPath || defaultInputPath, info.absoluteResourcePath).replace(/\\/g, '/')
+            : info => resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
+        chunkFilename: chunkFileName,
+        path: outputPath,
+        filename: fileName,
+        globalObject: 'this', // web-worker and node support
         publicPath: config.publicPath || defaultPublicPath,
     };
 
-    webpackConfig.plugins = [
-        new (requirePeerDependency('webpack', config)).DefinePlugin({
-            ...(stringifyDefinitions(config.definitions) || {}),
-            'process.env.NODE_ENV': JSON.stringify(getEnv(config)),
-        }),
-        new (requirePeerDependency('error-overlay-webpack-plugin', config))(),
-    ];
+    const basePlugins = [];
+
+    if (platform !== 'nodejs') {
+        // replaces process.env.$key = $val in code
+        basePlugins.push(new webpack.DefinePlugin(getDefinitionsStringified(config)));
+
+        // adds support for beautiful HTML/JS error overlays and stack traces
+        basePlugins.push(new (require('error-overlay-webpack-plugin'))());
+    }
+
+    webpackConfig.plugins = basePlugins;
+
+    if (config.ignoreFilePattern && config.ignoreFileContextPattern) {
+        webpackConfig.plugins.push(new webpack.IgnorePlugin(config.ignoreFilePattern, config.ignoreFileContextPattern));
+    }
 
     if (config.enableDesktopNotifications) {
         webpackConfig.plugins.push(
-            new (requirePeerDependency('friendly-errors-webpack-plugin', config))({
+            // beautiful console error reporting
+            new (require('friendly-errors-webpack-plugin'))({
                 onErrors: (severity: string, errors: Array<any>) => notifyOnError(severity, errors, config),
             }),
         );
     }
 
+    if (config.enableTypeScriptTypeChecking) {
+        const ForkTsCheckerWebpackPlugin = requireFromContext('react-dev-utils/ForkTsCheckerWebpackPlugin', config);
+        const typescriptFormatter = requireFromContext('react-dev-utils/typescriptFormatter', config);
+
+        new ForkTsCheckerWebpackPlugin({
+            typescript: requireFromContext('typescript', config),
+            async: isDevelopment(),
+            useTypescriptIncrementalApi: true,
+            checkSyntacticErrors: true,
+            resolveModuleNameModule: (<any>process.versions).pnp ? `${__dirname}/pnp-resolve.js` : undefined,
+            resolveTypeReferenceDirectiveModule: (<any>process.versions).pnp
+                ? `${__dirname}/pnp-resolve.js`
+                : undefined,
+            // TODO: Check if path needs to be resolved
+            tsconfig: config.typeScriptTypeCheckingConfig,
+            reportFiles: [
+                '**',
+                '!**/__tests__/**',
+                '!**/?(*.)(spec|test).*',
+                '!**/src/setupProxy.*',
+                '!**/src/setupTests.*',
+            ],
+            silent: true,
+            formatter: isProduction() ? typescriptFormatter : undefined,
+        });
+    }
+
+    const resolvePlugins = [];
+    const resolveLoaderPlugins = [];
+
+    if (config.enableYarnPnp) {
+        // yarn's ultra-fast pnp module resolution
+        const PnpWebpackPlugin = requireFromContext('pnp-webpack-plugin', config);
+
+        // enable yarn plug & play (pnp) support to discover webpack plugins
+        resolvePlugins.push(PnpWebpackPlugin);
+        resolveLoaderPlugins.push(PnpWebpackPlugin.moduleLoader(module));
+    }
+
     webpackConfig.resolve = {
+        modules: ['node_modules', getContextNodeModulesPath(config)],
         extensions: config.moduleResolutionFileExtensions || defaultModuleResolveFileExtensions,
+        plugins: resolvePlugins,
     };
 
-    webpackConfig.devtool = config.devTool || defaultDevTool;
+    webpackConfig.resolveLoader = {
+        modules: ['node_modules', resolve(__dirname, '..', 'loaders')],
+        plugins: resolveLoaderPlugins,
+    };
+
+    webpackConfig.devtool = config.devTool || isProduction() ? defaultProductionDevTool : defaultDevelopmentDevTool;
 
     webpackConfig.stats = defaultStatsConfig;
 
     webpackConfig.module = {
+        strictExportPresence: true,
         rules: getModuleLoadingRules(config, getStyleLoadingRules(config)),
     };
+
+    if (platform === 'browser') {
+        webpackConfig.node = {
+            module: 'empty',
+            dgram: 'empty',
+            dns: 'mock',
+            fs: 'empty',
+            http2: 'empty',
+            net: 'empty',
+            tls: 'empty',
+            child_process: 'empty',
+        };
+    }
+
+    if (platform === 'nodejs') {
+        // provide no polyfills nor mocks at all
+        webpackConfig.node = false;
+    }
+
+    // no performance reporting, we're using BundleAnalyzer
+    webpackConfig.performance = false;
+
     return webpackConfig;
 };

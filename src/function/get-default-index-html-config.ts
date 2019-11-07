@@ -15,7 +15,7 @@ export const getDefaultIndexHTMLConfig = (config: IBuildConfig, webpackConfig: C
 
     const indexHTMLTemplateExists = existsSync(indexHTMLFilePath);
 
-    if (!indexHTMLTemplateExists && !config.serverMode) {
+    if (!indexHTMLTemplateExists && !config.isNodeJsTarget) {
         writeFileSync(indexHTMLFilePath, readFileSync(resolve(__dirname, '..', 'index.html'), 'utf8'));
         log('Created default index.html file because it did not exist yet.');
     }

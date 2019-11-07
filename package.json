@@ -1,6 +1,6 @@
 {
     "name": "st-start",
-    "version": "2.0.0-beta.7",
+    "version": "2.0.0-beta.8",
     "publishConfig": {
         "access": "public"
     },
@@ -23,6 +23,7 @@
         "typescript bundler",
         "babel",
         "webpack",
+        "zero config",
         "zero configuration",
         "framework agnostic"
     ],
@@ -30,10 +31,9 @@
     "scripts": {
         "clean": "st-run st-rm-rf dist",
         "prebuild": "yarn clean",
-        "build": "st-run system:tsc ++ st-cp package.json node_modules sample-config/index.html sample-config/index.tsx springtype.png dist",
+        "build": "st-run system:tsc ++ st-cp package.json sample-config/index.html springtype.png dist ++ st-cp src/loaders/st-babel-preset/package.json dist/loaders/st-babel-preset ++ st-cp src/loaders/st-customize-babel-loader/package.json dist/loaders/st-customize-babel-loader",
         "test": "jest --verbose",
-        "pree2e": "yarn test",
-        "e2e": "testcafe chrome:headless **/__e2e__/*",
+        "posttest": "testcafe chrome:headless **/__e2e__/*",
         "release": "npm login",
         "postrelease": "npm publish"
     },
@@ -44,27 +44,57 @@
     "license": "MIT",
     "devDependencies": {
         "@types/jest": "^24.0.21",
-        "@types/node": "^12.12.4",
+        "@types/node": "^12.12.5",
         "@types/node-notifier": "^5.4.0",
         "@types/webpack": "^4.39.8",
-        "jest": "^24.9.0",
+        "jest": "24.9.0",
+        "jest-environment-jsdom-fourteen": "0.1.0",
+        "jest-resolve": "24.9.0",
+        "jest-watch-typeahead": "0.4.0",
         "prettier": "^1.18.2",
-        "st-run": "^2.0.0-alpha.17",
+        "st-rm-rf": "^2.0.0-alpha.5",
+        "st-run": "2.0.0-alpha.20",
         "testcafe": "^1.6.0",
         "ts-jest": "^24.1.0",
-        "typescript": "^3.6.4",
-        "st-rm-rf": "^2.0.0-alpha.5"
+        "typescript": "^3.6.4"
     },
-    "bundledDependencies": [
-        "cross-spawn",
-        "commander",
-        "envinfo",
-        "chalk"
-    ],
     "dependencies": {
+        "@babel/core": "^7.7.2",
+        "@babel/plugin-proposal-class-properties": "^7.7.0",
+        "@babel/plugin-proposal-decorators": "^7.7.0",
+        "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
+        "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+        "@babel/plugin-transform-destructuring": "^7.6.0",
+        "@babel/plugin-transform-runtime": "^7.6.2",
+        "@babel/preset-env": "^7.7.1",
+        "@babel/preset-react": "^7.7.0",
+        "@babel/preset-typescript": "^7.7.2",
+        "babel-loader": "8.0.6",
+        "babel-plugin-dynamic-import-node": "^2.3.0",
+        "babel-plugin-macros": "^2.6.1",
+        "babel-plugin-named-asset-import": "^0.3.4",
+        "babel-preset-react-app": "^9.0.2",
+        "case-sensitive-paths-webpack-plugin": "2.2.0",
         "chalk": "^2.4.2",
         "commander": "^4.0.0",
+        "compression-webpack-plugin": "^3.0.0",
         "cross-spawn": "^7.0.1",
-        "envinfo": "^7.4.0"
+        "css-loader": "^3.2.0",
+        "dotenv": "^8.2.0",
+        "dotenv-expand": "^5.1.0",
+        "envinfo": "^7.4.0",
+        "error-overlay-webpack-plugin": "^0.4.1",
+        "escape-string-regexp": "^2.0.0",
+        "file-loader": "4.2.0",
+        "friendly-errors-webpack-plugin": "^1.7.0",
+        "global": "^4.4.0",
+        "html-webpack-plugin": "4.0.0-beta.5",
+        "mini-css-extract-plugin": "0.8.0",
+        "optimize-css-assets-webpack-plugin": "5.0.3",
+        "resolve": "1.12.0",
+        "style-loader": "1.0.0",
+        "terser-webpack-plugin": "2.2.1",
+        "webpack": "4.41.2",
+        "webpack-dev-server": "3.9.0"
     }
 }
