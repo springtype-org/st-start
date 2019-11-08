@@ -11,10 +11,13 @@ import 'springtype/web/router';
 import 'springtype/web/tss';
 import 'springtype/web/vdom';
 import { domRef, tsx } from 'springtype/web/vdom';
+import * as material from "./material.scss";
 import * as styles2 from './some.css';
 import vertShader from "./test.vert";
 
 console.log('Raw file import', vertShader);
+console.log("material", material.mdcButton);
+
 
 @component()
 export class Demo extends st.component {

@@ -1,7 +1,7 @@
 import { RuleSetRule } from 'webpack';
 import { defaultCSSOutputFileNamePattern } from '../defaults';
 import { IBuildConfig } from './../interface/ibuild-config';
-import { getEnableSourceMaps, isProduction } from './config-getters';
+import { getContextNodeModulesPath, getEnableSourceMaps, getInputPath, isProduction } from './config-getters';
 import { requireFromContext, resolveFromContext } from './require-from-context';
 
 // TODO: Necessary?
@@ -76,6 +76,7 @@ export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> =
                 localIdentName: config.cssOutputFileNamePattern || defaultCSSOutputFileNamePattern,
                 hashPrefix: 'st',
             },
+            localsConvention: 'camelCaseOnly',
             importLoaders: config.enablePostCSS && config.enableSass ? 2 : 1,
             sourceMap: getEnableSourceMaps(config),
         },
@@ -106,6 +107,9 @@ export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> =
             loader: resolveFromContext('sass-loader', config),
             options: {
                 sourceMap: getEnableSourceMaps(config),
+                sassOptions: {
+                    includePaths: [getContextNodeModulesPath(config), getInputPath(config)],
+                },
             },
         });
     }

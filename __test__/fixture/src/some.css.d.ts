@@ -2,4 +2,4 @@
 export const photo: string;
 export const roundedPhoto: string;
 export const caption: string;
-export const AlignmentSection1: string;
+export const alignmentSection1: string;

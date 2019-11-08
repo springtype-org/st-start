@@ -9,6 +9,7 @@
     "author": "Aron Homberg <info@aron-homberg.de>",
     "license": "MIT",
     "dependencies": {
+        "@material/button": "^4.0.0",
         "source-map-support": "^0.5.16",
         "springtype": "2.0.0-alpha.1.17",
         "st-start": "../../dist"
