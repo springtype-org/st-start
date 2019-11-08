@@ -1,6 +1,6 @@
 {
     "name": "st-start",
-    "version": "2.0.0-beta.18",
+    "version": "2.0.0-beta.20",
     "publishConfig": {
         "access": "public"
     },
@@ -31,7 +31,7 @@
     "scripts": {
         "clean": "st-run st-rm-rf dist",
         "prebuild": "yarn clean",
-        "build": "st-run system:tsc ++ st-cp package.json sample-config/index.html springtype.png dist ++ st-cp src/loaders/st-transform-decorator/package.json dist/loaders/st-transform-decorator ++ st-cp src/loaders/st-customize-babel-loader/package.json dist/loaders/st-customize-babel-loader",
+        "build": "st-run system:tsc ++ st-cp README.md package.json sample-config/index.html springtype.png dist ++ st-cp src/loaders/st-transform-decorator/package.json dist/loaders/st-transform-decorator ++ st-cp src/loaders/st-customize-babel-loader/package.json dist/loaders/st-customize-babel-loader",
         "test": "jest --verbose",
         "posttest": "testcafe chrome:headless **/__e2e__/*",
         "release": "npm login",

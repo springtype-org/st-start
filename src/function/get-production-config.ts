@@ -116,13 +116,13 @@ export const getProductionConfig = (config: IBuildConfig): Configuration => {
     webpackConfig.optimization = {
         minimize: isProduction(),
         minimizer: [
-            new (require('optimize-css-assets-webpack-plugin'))({
-                cssProcessorOptions: cssAssetOptimizationProcessorOptions,
-            }),
             // JS uglification, minification and hoisting
             new (require('terser-webpack-plugin'))({
                 ...defaultTerserOptions,
                 sourceMap: config.enableSourceMapInProduction || defaultEnableSourceMapInProduction,
+            }),
+            new (require('optimize-css-assets-webpack-plugin'))({
+                cssProcessorOptions: cssAssetOptimizationProcessorOptions,
             }),
         ],
         runtimeChunk: config.singleFileOutput ? false : defaultRuntimeChunkOptions,
