@@ -9,10 +9,11 @@ import { getEntryPointFilePath } from './get-entrypoint-filepath';
 import { getLegacyDecoratorInject } from './get-legacy-decorator-inject';
 import { getModuleLoadingRules } from './get-module-loading-rules';
 import { getPlatform } from './get-platform';
-import { getStyleLoadingRules } from './get-style-loading-rules';
 import { log } from './log';
 import { notifyOnError } from './notify-on-error';
 import { requireFromContext } from './require-from-context';
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 export const getBaseConfig = (config: IBuildConfig): Configuration => {
     const webpackConfig: Partial<Configuration> = {};
 
@@ -78,7 +79,16 @@ export const getBaseConfig = (config: IBuildConfig): Configuration => {
         basePlugins.push(new (require('error-overlay-webpack-plugin'))());
     }
 
+
     basePlugins.push(getLegacyDecoratorInject());
+
+    basePlugins.push(new MiniCssExtractPlugin({
+        // Options similar to the same options in webpackOptions.output
+        // all options are optional
+        filename: 'static/css/[name].css',
+        chunkFilename: 'static/css/[id].css',
+        ignoreOrder: false, // Enable to remove warnings about conflicting order
+      }))
 
     webpackConfig.plugins = basePlugins;
 
@@ -151,7 +161,7 @@ export const getBaseConfig = (config: IBuildConfig): Configuration => {
 
     webpackConfig.module = {
         strictExportPresence: true,
-        rules: getModuleLoadingRules(config, getStyleLoadingRules(config)),
+        rules: getModuleLoadingRules(config),
     };
 
     if (platform === 'browser') {

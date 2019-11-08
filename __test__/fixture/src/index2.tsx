@@ -13,7 +13,10 @@ import 'springtype/web/vdom';
 import { domRef, tsx } from 'springtype/web/vdom';
 import * as material from "./material.scss";
 import * as styles2 from './some.css';
+import "./some.global.scss"; // global CSS
 import vertShader from "./test.vert";
+
+
 
 console.log('Raw file import', vertShader);
 console.log("material", material.mdcButton);

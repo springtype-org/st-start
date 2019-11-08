@@ -1,15 +1,18 @@
 import { RuleSetRule } from 'webpack';
-import { defaultInlineImageExtensions, defaultInlineMaxFileSize, defaultRawFileExcludeExtensions as defaultExcludeFileLoaderExtensions, defaultRawFileImportLoaderExtensions, defaultTestCSSTranspileFileExtensions, defaultTestJSTranspileFileExtensions } from '../defaults';
+import { defaultInlineImageExtensions, defaultInlineMaxFileSize, defaultRawFileExcludeExtensions as defaultExcludeFileLoaderExtensions, defaultRawFileImportLoaderExtensions, defaultTestCSSTranspileFileExtensions, defaultTestGlobalCSSTranspileFileExtensions, defaultTestJSTranspileFileExtensions } from '../defaults';
 import { IBuildConfig } from './../interface/ibuild-config';
 import { getEnableSourceMaps, getInputPath, isProduction } from './config-getters';
 import { getBabelConfig } from './get-babel-config';
 import { getCacheIdent } from './get-cache-ident';
+import { getStyleLoadingRules } from './get-style-loading-rules';
 import { requireFromContext, resolveFromContext } from './require-from-context';
 export const getModuleLoadingRules = (
-    config: IBuildConfig,
-    styleLoadingRules: Array<RuleSetRule>,
+    config: IBuildConfig
 ): Array<RuleSetRule> => {
     const transpilationRulesOneOf = [];
+
+    const styleLoadingRules: Array<RuleSetRule> = getStyleLoadingRules(config);
+    const globalStyleLoadingRules: Array<RuleSetRule> = getStyleLoadingRules(config, true);
 
     if (config.enableImageInlining) {
         // support for image inlining
@@ -49,9 +52,18 @@ export const getModuleLoadingRules = (
         },
     });
 
+    // standard CSS modules
     transpilationRulesOneOf.push({
         test: config.testCSSTranspileFileExtensions || defaultTestCSSTranspileFileExtensions,
         use: styleLoadingRules,
+        // make sure side effects are always considered
+        sideEffects: true,
+    });
+
+    // global CSS support (.global.(css|scss|sass))
+    transpilationRulesOneOf.push({
+        test: config.testCSSGlobalTranspileFileExtensions || defaultTestGlobalCSSTranspileFileExtensions,
+        use: globalStyleLoadingRules,
         // make sure side effects are always considered
         sideEffects: true,
     });
@@ -78,7 +90,6 @@ export const getModuleLoadingRules = (
             name: 'static/assets/[name].[hash:8].[ext]',
         },
     });
-
 
     const moduleLoadingRules = [
         // disable non-standard language features

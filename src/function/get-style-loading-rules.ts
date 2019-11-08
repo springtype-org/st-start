@@ -1,13 +1,12 @@
 import { RuleSetRule } from 'webpack';
 import { defaultCSSOutputFileNamePattern } from '../defaults';
 import { IBuildConfig } from './../interface/ibuild-config';
-import { getContextNodeModulesPath, getEnableSourceMaps, getInputPath, isProduction } from './config-getters';
+import { getContextNodeModulesPath, getEnableSourceMaps, getInputPath } from './config-getters';
 import { requireFromContext, resolveFromContext } from './require-from-context';
 
-// TODO: Necessary?
 //const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> => {
+export const getStyleLoadingRules = (config: IBuildConfig, isForGlobalStyles: boolean = false): Array<RuleSetRule> => {
     const postCSSEnvPresetOptions: any = {
         stage: 3, // TODO: config!
     };
@@ -32,30 +31,24 @@ export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> =
         postCSSPlugins.push(requireFromContext('lost', config));
     }
 
-    const styleLoadingRules: Array<RuleSetRule> = [
-        // enables CSS module imports like:
-        // import * as style from 'foo.css';
-        // console.log(style.bar); // "bar-foo-3hg4z"
-        {
-            loader: require.resolve('style-loader'),
-        },
-    ];
-
+    const styleLoadingRules: Array<RuleSetRule> = [];
+    /*
     if (isProduction()) {
-        // TODO: Fixme: Creates .js files containing CSS when importing CSS in TS
-        /*
         styleLoadingRules.push({
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-                chunkFilename: isDevelopment() ? '[id].css' : '[id].[hash].css',
-            }
+            loader: MiniCssExtractPlugin.loader
         });
-        */
-    }
-
+    }*/
+    
+    // enables CSS module imports like:
+    // import * as style from 'foo.css';
+    // console.log(style.bar); // "bar-foo-3hg4z"
+    styleLoadingRules.push({
+        loader: require.resolve('style-loader'),
+    });
+    
     // generates .d.ts files corresponding module declaration files
     // for typed CSS module exports
-    if (config.enableCssImportTypeDeclaration) {
+    if (config.enableCssImportTypeDeclaration && !isForGlobalStyles) {
         styleLoadingRules.push({
             // TODO: Implement on our own, it has outdated dependencies
             // generates .d.ts files for CSS module imports
@@ -71,12 +64,14 @@ export const getStyleLoadingRules = (config: IBuildConfig): Array<RuleSetRule> =
         loader: require.resolve('css-loader'),
         options: {
             // enables CSS modules support
-            modules: {
-                mode: 'local',
-                localIdentName: config.cssOutputFileNamePattern || defaultCSSOutputFileNamePattern,
-                hashPrefix: 'st',
-            },
-            localsConvention: 'camelCaseOnly',
+            modules: !isForGlobalStyles
+                ? {
+                      mode: 'local',
+                      localIdentName: config.cssOutputFileNamePattern || defaultCSSOutputFileNamePattern,
+                      hashPrefix: 'st',
+                  }
+                : undefined,
+            localsConvention: !isForGlobalStyles ? 'camelCaseOnly' : undefined,
             importLoaders: config.enablePostCSS && config.enableSass ? 2 : 1,
             sourceMap: getEnableSourceMaps(config),
         },
