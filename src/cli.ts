@@ -50,6 +50,7 @@ const program = new commander.Command(packageJson.name)
         );
     }
 
+
     const configFile: string = program.config
         ? resolve(program.config)
         : resolve(process.cwd(), defaultCustomConfigFileName);

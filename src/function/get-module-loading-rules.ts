@@ -1,11 +1,10 @@
-import { resolve } from 'path';
 import { RuleSetRule } from 'webpack';
 import { defaultInlineImageExtensions, defaultInlineMaxFileSize, defaultRawFileExcludeExtensions, defaultTestCSSTranspileFileExtensions, defaultTestJSTranspileFileExtensions } from '../defaults';
 import { IBuildConfig } from './../interface/ibuild-config';
 import { getEnableSourceMaps, getInputPath, isProduction } from './config-getters';
+import { getBabelConfig } from './get-babel-config';
 import { getCacheIdent } from './get-cache-ident';
 import { requireFromContext, resolveFromContext } from './require-from-context';
-
 export const getModuleLoadingRules = (
     config: IBuildConfig,
     styleLoadingRules: Array<RuleSetRule>,
@@ -24,27 +23,29 @@ export const getModuleLoadingRules = (
         });
     }
 
+    const babelConfig = getBabelConfig();
+    
     transpilationRulesOneOf.push({
         test: config.testJSTranspileFileExtensions || defaultTestJSTranspileFileExtensions,
-        include: resolve(getInputPath(config)),
+        // TODO: Test if it includes all files now
+        //include: resolve(getInputPath(config)),
         loader: require.resolve('babel-loader'),
         options: {
             customize: require.resolve('../loaders/st-customize-babel-loader'),
             babelrc: false,
             configFile: false,
-            presets: [require.resolve('../loaders/st-babel-preset')],
             cacheIdentifier: getCacheIdent(isProduction() ? 'production' : 'development', [
-                //'babel-plugin-named-asset-import',
                 'babel-preset-react-app',
                 'react-dev-utils',
                 'st-start',
             ]),
-            //plugins: [[require.resolve('babel-plugin-named-asset-import')]],
             cacheDirectory: true,
             cacheCompression: false,
             sourceMaps: getEnableSourceMaps(config),
             inputSourceMap: getEnableSourceMaps(config),
             compact: isProduction(),
+            presets: babelConfig.presets,
+            plugins: babelConfig.plugins
         },
     });
 
@@ -83,6 +84,8 @@ export const getModuleLoadingRules = (
             // @ts-ignore
             test: config.testJSTranspileFileExtensions || defaultTestJSTranspileFileExtensions,
             enforce: 'pre',
+            // limit linting only to the input path, no node_modules or other external include paths
+            include: getInputPath(config),
             use: [
                 {
                     options: {
@@ -111,7 +114,6 @@ export const getModuleLoadingRules = (
                     loader: resolveFromContext('eslint-loader', config),
                 },
             ],
-            include: getInputPath(config),
         });
     }
 

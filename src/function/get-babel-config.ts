@@ -1,22 +1,16 @@
-import { dirname } from 'path';
-import { defaultCoreJsVersion, defaultJSXPragma } from '../../defaults';
-import { isDevelopment, isTest } from '../../function/config-getters';
-import { Platform } from '../../interface/platform';
-import { getPlatform } from './../../function/get-platform';
-import { IStBabelPresetOptions } from './interface/ioptions';
+import { dirname } from "path";
+import { defaultCoreJsVersion, defaultJSXPragma } from "../defaults";
+import { isDevelopment, isTest } from "./config-getters";
+import { getPlatform } from "./get-platform";
 
-// @ts-ignore
-export default (api: any, opts: IStBabelPresetOptions = {}) => {
-    const platform = <Platform>getPlatform();
+export interface IBabelConfig {
+    presets: Array<any>;
+    plugins: Array<any>;
+}
+
+export const getBabelConfig = (): IBabelConfig => {
     const presetEnv = [require('@babel/preset-env')];
-
-    if (!opts.jsxPragma) {
-        opts.jsxPragma = defaultJSXPragma;
-    }
-
-    if (!opts.jsxPragmaFrag) {
-        opts.jsxPragmaFrag = defaultJSXPragma;
-    }
+    const platform = getPlatform();
 
     if (platform === 'nodejs') {
         presetEnv.push({
@@ -31,7 +25,7 @@ export default (api: any, opts: IStBabelPresetOptions = {}) => {
             useBuiltIns: 'entry',
             modules: false,
             exclude: ['transform-typeof-symbol'],
-            corejs: opts.coreJsVersion ? opts.coreJsVersion : defaultCoreJsVersion,
+            corejs: defaultCoreJsVersion,
         });
     }
 
@@ -42,18 +36,19 @@ export default (api: any, opts: IStBabelPresetOptions = {}) => {
             {
                 // will use the native built-in instead of trying to polyfill
                 useBuiltIns: true,
-                pragma: opts.jsxPragma,
-                pragmaFrag: opts.jsxPragmaFrag,
+                // TODO: Configurable!
+                pragma: defaultJSXPragma,
+                pragmaFrag: defaultJSXPragma,
                 // adds a stack trace to warnings
                 development: isDevelopment() || isTest(),
                 throwIfNamespace: false,
             },
         ],
-        [require('@babel/preset-typescript'), { jsxPragma: opts.jsxPragma }],
+        [require('@babel/preset-typescript'), { jsxPragma: defaultJSXPragma }],
     ];
 
     const plugins = [
-        require('babel-plugin-macros'),
+        //require('babel-plugin-macros'),
         [
             require('@babel/plugin-transform-destructuring'),
             {
@@ -73,7 +68,12 @@ export default (api: any, opts: IStBabelPresetOptions = {}) => {
             },
         ],
         // legacy TypeScript decorators
-        [require('@babel/plugin-proposal-decorators'), false],
+        [
+            require('../loaders/st-transform-decorator'),
+            {
+                legacy: true
+            },
+        ],
         // class { handleClick = () => { } } loose mode, not using Object.defineProperty()
         [
             require('@babel/plugin-proposal-class-properties'),
@@ -94,9 +94,9 @@ export default (api: any, opts: IStBabelPresetOptions = {}) => {
             {
                 regenerator: true,
                 corejs: false,
-                helpers: opts.enableHelpers,
+                helpers: false, // TODO: config
                 useESModules: true,
-                absoluteRuntime: opts.useAbsoluteRuntime
+                absoluteRuntime: false // TODO: config
                     ? dirname(require.resolve('@babel/runtime/package.json'))
                     : undefined,
             },
@@ -118,11 +118,5 @@ export default (api: any, opts: IStBabelPresetOptions = {}) => {
     return {
         presets,
         plugins,
-        overrides: [
-            {
-                test: /\.tsx?$/,
-                plugins: [[require('@babel/plugin-proposal-decorators'), { legacy: true }]],
-            },
-        ],
     };
-};
+}

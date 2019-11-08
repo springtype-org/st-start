@@ -16,7 +16,7 @@ export const startSingle = async (
 ): Promise<void> => {
     const webpackConfig = getEnv() === 'production' ? getProductionConfig(config) : getDevelopmentConfig(config);
     const webpack = requireFromContext('webpack', config)(webpackConfig);
-    const devServerAlreadyRunning = taskNr !== 0;
+    const devServerAlreadyRunning = typeof taskNr !== 'undefined' && taskNr !== 0;
     const entryPointFile = getEntryPointFilePath(config);
 
     if (!existsSync(entryPointFile)) {

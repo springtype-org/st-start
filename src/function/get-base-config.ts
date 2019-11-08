@@ -6,13 +6,13 @@ import { Platform } from '../interface/platform';
 import { defaultInputPath } from './../defaults';
 import { getContextNodeModulesPath, getContextPath, getDefinitionsStringified, getEnv, getOutputPath, isDevelopment, isProduction } from './config-getters';
 import { getEntryPointFilePath } from './get-entrypoint-filepath';
+import { getLegacyDecoratorInject } from './get-legacy-decorator-inject';
 import { getModuleLoadingRules } from './get-module-loading-rules';
 import { getPlatform } from './get-platform';
 import { getStyleLoadingRules } from './get-style-loading-rules';
 import { log } from './log';
 import { notifyOnError } from './notify-on-error';
 import { requireFromContext } from './require-from-context';
-
 export const getBaseConfig = (config: IBuildConfig): Configuration => {
     const webpackConfig: Partial<Configuration> = {};
 
@@ -77,6 +77,8 @@ export const getBaseConfig = (config: IBuildConfig): Configuration => {
         // adds support for beautiful HTML/JS error overlays and stack traces
         basePlugins.push(new (require('error-overlay-webpack-plugin'))());
     }
+
+    basePlugins.push(getLegacyDecoratorInject());
 
     webpackConfig.plugins = basePlugins;
 

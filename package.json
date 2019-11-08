@@ -1,6 +1,6 @@
 {
     "name": "st-start",
-    "version": "2.0.0-beta.10",
+    "version": "2.0.0-beta.14",
     "publishConfig": {
         "access": "public"
     },
@@ -31,7 +31,7 @@
     "scripts": {
         "clean": "st-run st-rm-rf dist",
         "prebuild": "yarn clean",
-        "build": "st-run system:tsc ++ st-cp package.json sample-config/index.html springtype.png dist ++ st-cp src/loaders/st-babel-preset/package.json dist/loaders/st-babel-preset ++ st-cp src/loaders/st-customize-babel-loader/package.json dist/loaders/st-customize-babel-loader",
+        "build": "st-run system:tsc ++ st-cp package.json sample-config/index.html springtype.png dist ++ st-cp src/loaders/st-transform-decorator/package.json dist/loaders/st-transform-decorator ++ st-cp src/loaders/st-customize-babel-loader/package.json dist/loaders/st-customize-babel-loader",
         "test": "jest --verbose",
         "posttest": "testcafe chrome:headless **/__e2e__/*",
         "release": "npm login",
@@ -43,8 +43,8 @@
     "author": "Aron Homberg <info@aron-homberg.de>",
     "license": "MIT",
     "devDependencies": {
-        "@types/jest": "^24.0.21",
-        "@types/node": "^12.12.5",
+        "@types/jest": "^24.0.22",
+        "@types/node": "^12.12.6",
         "@types/node-notifier": "^5.4.0",
         "@types/webpack": "^4.39.8",
         "jest": "24.9.0",
@@ -54,15 +54,18 @@
         "prettier": "^1.18.2",
         "st-rm-rf": "^2.0.0-alpha.5",
         "st-run": "2.0.0-alpha.20",
-        "testcafe": "^1.6.0",
+        "testcafe": "^1.6.1",
         "ts-jest": "^24.1.0",
         "typescript": "^3.6.4"
     },
     "dependencies": {
         "@babel/core": "^7.7.2",
+        "@babel/helper-create-class-features-plugin": "^7.7.0",
+        "@babel/helper-plugin-utils": "^7.0.0",
+        "@babel/helpers": "^7.7.0",
         "@babel/plugin-proposal-class-properties": "^7.7.0",
-        "@babel/plugin-proposal-decorators": "^7.7.0",
         "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
+        "@babel/plugin-syntax-decorators": "^7.2.0",
         "@babel/plugin-syntax-dynamic-import": "^7.2.0",
         "@babel/plugin-transform-destructuring": "^7.6.0",
         "@babel/plugin-transform-runtime": "^7.6.2",
@@ -95,6 +98,7 @@
         "style-loader": "1.0.0",
         "terser-webpack-plugin": "2.2.1",
         "webpack": "4.41.2",
-        "webpack-dev-server": "3.9.0"
+        "webpack-dev-server": "3.9.0",
+        "webpack-inject-plugin": "^1.5.3"
     }
 }
