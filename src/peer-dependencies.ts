@@ -62,6 +62,9 @@ export const peerDependencies: {
 
     // typeScriptTypeChecking
     typescript: '^3.6.4',
+
+    // rawLoader
+    'raw-loader': '^3.1.0',
 };
 
 export const featureToPeerDependencyMap = {
@@ -76,6 +79,7 @@ export const featureToPeerDependencyMap = {
         'postcss-normalize',
         'postcss-safe-parser',
     ],
+    rawLoader: ['raw-loader'],
     autoprefixer: ['autoprefixer'],
     brotliCompression: ['brotli-webpack-plugin'],
     manifest: ['webpack-manifest-plugin'],

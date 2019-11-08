@@ -1,6 +1,6 @@
 {
     "name": "st-start",
-    "version": "2.0.0-beta.15",
+    "version": "2.0.0-beta.16",
     "publishConfig": {
         "access": "public"
     },
@@ -56,7 +56,7 @@
         "st-run": "2.0.0-alpha.20",
         "testcafe": "^1.6.1",
         "ts-jest": "^24.1.0",
-        "typescript": "^3.6.4"
+        "typescript": "^3.7.2"
     },
     "dependencies": {
         "@babel/core": "^7.7.2",
@@ -88,7 +88,7 @@
         "envinfo": "^7.4.0",
         "error-overlay-webpack-plugin": "^0.4.1",
         "escape-string-regexp": "^2.0.0",
-        "file-loader": "4.2.0",
+        "file-loader": "^4.2.0",
         "friendly-errors-webpack-plugin": "^1.7.0",
         "global": "^4.4.0",
         "html-webpack-plugin": "4.0.0-beta.5",

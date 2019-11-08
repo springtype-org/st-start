@@ -11,7 +11,6 @@ export const enableDefaultFeatures = (config: IBuildConfig) => {
     config.enableDesktopNotifications = config.enableDesktopNotifications !== false;
     config.enableSourceMapInProduction = config.enableSourceMapInProduction !== false;
     config.enableGzipCompression = config.enableGzipCompression !== false;
-    config.enableRawFileImport = config.enableRawFileImport !== false;
     config.inlineRuntimeChunks = config.inlineRuntimeChunks !== false;
     config.enableCssImportTypeDeclaration = config.enableCssImportTypeDeclaration !== false;
 }

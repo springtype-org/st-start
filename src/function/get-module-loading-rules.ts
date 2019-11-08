@@ -1,5 +1,5 @@
 import { RuleSetRule } from 'webpack';
-import { defaultInlineImageExtensions, defaultInlineMaxFileSize, defaultRawFileExcludeExtensions, defaultTestCSSTranspileFileExtensions, defaultTestJSTranspileFileExtensions } from '../defaults';
+import { defaultInlineImageExtensions, defaultInlineMaxFileSize, defaultRawFileExcludeExtensions as defaultExcludeFileLoaderExtensions, defaultRawFileImportLoaderExtensions, defaultTestCSSTranspileFileExtensions, defaultTestJSTranspileFileExtensions } from '../defaults';
 import { IBuildConfig } from './../interface/ibuild-config';
 import { getEnableSourceMaps, getInputPath, isProduction } from './config-getters';
 import { getBabelConfig } from './get-babel-config';
@@ -56,20 +56,29 @@ export const getModuleLoadingRules = (
         sideEffects: true,
     });
 
+    // allows for importing files "as is", but only for files matching the test
     if (config.enableRawFileImport) {
-        // allows for importing files "as is", but only for files with extensions
-        // which are not excluded by a RegExp match
         transpilationRulesOneOf.push({
-            loader: resolveFromContext('file-loader', config),
-            exclude: [
-                config.testJSTranspileFileExtensions || defaultTestJSTranspileFileExtensions,
-                ...(config.rawFileExcludeImportExtensions || defaultRawFileExcludeExtensions),
-            ],
-            options: {
-                name: 'static/assets/[name].[hash:8].[ext]',
-            },
+            test: config.rawFileImportExtensionTest || defaultRawFileImportLoaderExtensions,
+            use: resolveFromContext('raw-loader', config),
         });
     }
+
+    // copies referenced files over the the output directory
+    // and returns the path to the file on import 
+    transpilationRulesOneOf.push({
+        loader: resolveFromContext('file-loader', config),
+        exclude: [
+            config.testJSTranspileFileExtensions || defaultTestJSTranspileFileExtensions,
+            // these files won't be copied over to the output folder
+            // and they won't be referenced as paths to their location on import
+            ...(defaultExcludeFileLoaderExtensions),
+        ],
+        options: {
+            name: 'static/assets/[name].[hash:8].[ext]',
+        },
+    });
+
 
     const moduleLoadingRules = [
         // disable non-standard language features

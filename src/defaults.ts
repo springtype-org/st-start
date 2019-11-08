@@ -60,10 +60,14 @@ export const defaultInlineMaxFileSize = 10; // KiB
 
 // --- CSS, SASS/SCSS, PostCSS
 
-export const defaultTestCSSTranspileFileExtensions = /\.(css|sass|scss)$/;
+export const defaultTestCSSTranspileFileExtensions = /\.(css|sass|scss)$/i;
 export const defaultCSSOutputFileNamePattern = '[name]-[local]-[hash:base64:5]';
 
 // --- RAW FILE IMPORTS
+
+export const defaultRawFileImportLoaderExtensions = /\.(txt|vert|frag)$/i;
+
+// --- FILE LOADER
 
 export const defaultRawFileExcludeExtensions = [/\.json$/i, /\.html$/i];
 

@@ -60,6 +60,10 @@ export const getPeerDependencies = (config: IBuildConfig): Array<string> => {
         requiredPeerDependencies.push(...featureToPeerDependencyMap.typeScriptTypeChecking);
     }
 
+    if (config.enableRawFileImport) {
+        requiredPeerDependencies.push(...featureToPeerDependencyMap.rawLoader);
+    }
+
     // substitute dependency names by dependency@version to guarantee comparibility
     requiredPeerDependencies = requiredPeerDependencies.map((peerDependencyName: string) => {
         return `${peerDependencyName}@${peerDependencies[peerDependencyName]}`;

@@ -148,11 +148,11 @@ export interface IBuildConfig {
     // file extensions to NOT recognize as raw files imports, so they get processed well by
     // other loaders internally. All file extensions of testJSTranspileFileExtensions are excluded as well.
     // File extensions that aren't excluded are file-loaded.
-    rawFileExcludeImportExtensions?: Array<RegExp>; // default: [/\.json$/i, /\.html$/i]
+    rawFileImportExtensionTest?: RegExp; // default: /\.(txt|vert|frag)$/i
 
     // --- STYLING, CSS, SASS/SCSS, PostCSS SUPPORT
 
-    testCSSTranspileFileExtensions?: RegExp; // default: /\.(css|sass|scss)$/
+    testCSSTranspileFileExtensions?: RegExp; // default: /\.(css|sass|scss)$/i
 
     // allows to configure the way, CSS output files are stored
     cssOutputFileNamePattern?: string; // default: '[name]-[local]-[hash:base64:5]'

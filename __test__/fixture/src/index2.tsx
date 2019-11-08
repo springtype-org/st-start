@@ -12,6 +12,9 @@ import 'springtype/web/tss';
 import 'springtype/web/vdom';
 import { domRef, tsx } from 'springtype/web/vdom';
 import * as styles2 from './some.css';
+import vertShader from "./test.vert";
+
+console.log('Raw file import', vertShader);
 
 @component()
 export class Demo extends st.component {
