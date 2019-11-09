@@ -1,0 +1,14 @@
+.foo {
+    background: #000;
+}
+
+.AlignmentSection {
+    background: #f0d2d1;
+    height: 300px;
+    lost-align: center;
+
+    div {
+        background: #e5b1af;
+        lost-column: 1/3;
+    }
+}

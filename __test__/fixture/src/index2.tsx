@@ -11,9 +11,10 @@ import 'springtype/web/router';
 import 'springtype/web/tss';
 import 'springtype/web/vdom';
 import { domRef, tsx } from 'springtype/web/vdom';
-import * as material from "./material.scss";
-import * as styles2 from './some.css';
-import "./some.global.scss"; // global CSS
+import * as material from "./material.tss.scss";
+import "./some.scss"; // global CSS
+import * as styles2 from './some.tss.css';
+import * as styles3 from './some.tss.scss';
 import vertShader from "./test.vert";
 
 
@@ -21,6 +22,7 @@ import vertShader from "./test.vert";
 console.log('Raw file import', vertShader);
 console.log("material", material.mdcButton);
 
+console.log('styles3', styles3);
 
 @component()
 export class Demo extends st.component {

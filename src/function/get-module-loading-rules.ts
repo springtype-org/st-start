@@ -11,8 +11,8 @@ export const getModuleLoadingRules = (
 ): Array<RuleSetRule> => {
     const transpilationRulesOneOf = [];
 
-    const styleLoadingRules: Array<RuleSetRule> = getStyleLoadingRules(config);
-    const globalStyleLoadingRules: Array<RuleSetRule> = getStyleLoadingRules(config, true);
+    const styleLoadingRules: Array<RuleSetRule> = getStyleLoadingRules(config, true);
+    const globalStyleLoadingRules: Array<RuleSetRule> = getStyleLoadingRules(config);
 
     if (config.enableImageInlining) {
         // support for image inlining
@@ -60,6 +60,7 @@ export const getModuleLoadingRules = (
         sideEffects: true,
     });
 
+    console.log('for ', config.testCSSGlobalTranspileFileExtensions || defaultTestGlobalCSSTranspileFileExtensions, 'use', globalStyleLoadingRules)
     // global CSS support (.global.(css|scss|sass))
     transpilationRulesOneOf.push({
         test: config.testCSSGlobalTranspileFileExtensions || defaultTestGlobalCSSTranspileFileExtensions,

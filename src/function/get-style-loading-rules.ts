@@ -6,7 +6,7 @@ import { requireFromContext, resolveFromContext } from './require-from-context';
 
 //const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-export const getStyleLoadingRules = (config: IBuildConfig, isForGlobalStyles: boolean = false): Array<RuleSetRule> => {
+export const getStyleLoadingRules = (config: IBuildConfig, isTypedStylesheet: boolean = false): Array<RuleSetRule> => {
     const postCSSEnvPresetOptions: any = {
         stage: 3, // TODO: config!
     };
@@ -48,7 +48,7 @@ export const getStyleLoadingRules = (config: IBuildConfig, isForGlobalStyles: bo
     
     // generates .d.ts files corresponding module declaration files
     // for typed CSS module exports
-    if (config.enableCssImportTypeDeclaration && !isForGlobalStyles) {
+    if (config.enableCssImportTypeDeclaration && isTypedStylesheet) {
         styleLoadingRules.push({
             // TODO: Implement on our own, it has outdated dependencies
             // generates .d.ts files for CSS module imports
@@ -64,14 +64,14 @@ export const getStyleLoadingRules = (config: IBuildConfig, isForGlobalStyles: bo
         loader: require.resolve('css-loader'),
         options: {
             // enables CSS modules support
-            modules: !isForGlobalStyles
+            modules: isTypedStylesheet
                 ? {
                       mode: 'local',
                       localIdentName: config.cssOutputFileNamePattern || defaultCSSOutputFileNamePattern,
                       hashPrefix: 'st',
                   }
-                : undefined,
-            localsConvention: !isForGlobalStyles ? 'camelCaseOnly' : undefined,
+                : false,
+            localsConvention: isTypedStylesheet ? 'camelCaseOnly' : 'asIs',
             importLoaders: config.enablePostCSS && config.enableSass ? 2 : 1,
             sourceMap: getEnableSourceMaps(config),
         },

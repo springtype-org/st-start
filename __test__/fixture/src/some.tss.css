@@ -8,7 +8,7 @@ $bg: #ccc;
     composes: photo;
     border-radius: 1rem;
 }
-
+ 
 @media (min-width: 30rem) {
     .photo {
         width: 400px;

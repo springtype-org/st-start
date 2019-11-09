@@ -153,10 +153,10 @@ export interface IBuildConfig {
     // --- STYLING, CSS, SASS/SCSS, PostCSS SUPPORT
 
     // imported as CSS modules (with scoping)
-    testCSSTranspileFileExtensions?: RegExp; // default: /\.(css|sass|scss)$/i
+    testCSSTranspileFileExtensions?: RegExp; // default: /\.tss\.(css|sass|scss)$/i
 
     // matches for global scope CSS/SASS/SCSS/PostCSS that is not imported as CSS modules
-    testCSSGlobalTranspileFileExtensions?: RegExp; // default: /\.global\.(css|sass|scss)$/i
+    testCSSGlobalTranspileFileExtensions?: RegExp; // default: /\.(css|sass|scss)$/i
 
     // allows to configure the way, CSS output files are stored
     cssOutputFileNamePattern?: string; // default: '[name]-[local]-[hash:base64:5]'
