@@ -74,11 +74,7 @@ export const getBaseConfig = (config: IBuildConfig): Configuration => {
     if (platform !== 'nodejs') {
         // replaces process.env.$key = $val in code
         basePlugins.push(new webpack.DefinePlugin(getDefinitionsStringified(config)));
-
-        // adds support for beautiful HTML/JS error overlays and stack traces
-        basePlugins.push(new (require('error-overlay-webpack-plugin'))());
     }
-
 
     basePlugins.push(getLegacyDecoratorInject());
 

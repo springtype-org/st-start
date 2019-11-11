@@ -60,7 +60,6 @@ export const getModuleLoadingRules = (
         sideEffects: true,
     });
 
-    console.log('for ', config.testCSSGlobalTranspileFileExtensions || defaultTestGlobalCSSTranspileFileExtensions, 'use', globalStyleLoadingRules)
     // global CSS support (.global.(css|scss|sass))
     transpilationRulesOneOf.push({
         test: config.testCSSGlobalTranspileFileExtensions || defaultTestGlobalCSSTranspileFileExtensions,

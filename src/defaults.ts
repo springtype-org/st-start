@@ -157,6 +157,6 @@ export const defaultSplitChunksOptions: any = {
 
 // --- DEBUGGING
 
-export const defaultDevelopmentDevTool = 'cheap-module-source-map';
+export const defaultDevelopmentDevTool = 'eval-source-map';
 export const defaultProductionDevTool = 'source-map';
 export const defaultEnableSourceMapInProduction = true;
