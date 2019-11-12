@@ -7,6 +7,7 @@ import { getEntryPointFilePath } from './get-entrypoint-filepath';
 import { getProductionConfig } from './get-production-config';
 import { log } from './log';
 import { requireFromContext } from './require-from-context';
+import { transformStaticStyleFiles } from './transform-static-style-files';
 
 export const startSingle = async (
     config: IBuildConfig,
@@ -19,6 +20,10 @@ export const startSingle = async (
     const devServerAlreadyRunning = typeof taskNr !== 'undefined' && taskNr !== 0;
     const entryPointFile = getEntryPointFilePath(config);
 
+    // 1. static style transformation
+    await transformStaticStyleFiles(config);
+
+    // 2. TS/JS transformation
     if (!existsSync(entryPointFile)) {
         log(`Entry point file: ${entryPointFile} does not exist. Skipping.`, 'error');
         return;

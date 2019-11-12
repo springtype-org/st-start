@@ -12,7 +12,6 @@ import { getPlatform } from './get-platform';
 import { log } from './log';
 import { notifyOnError } from './notify-on-error';
 import { requireFromContext } from './require-from-context';
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 export const getBaseConfig = (config: IBuildConfig): Configuration => {
     const webpackConfig: Partial<Configuration> = {};
@@ -39,10 +38,10 @@ export const getBaseConfig = (config: IBuildConfig): Configuration => {
 
     log(`Entrypoint file is: ${entryPointFile}`);
 
+    // also add styles to the process chain
     webpackConfig.entry = {
-        main: [entryPointFile],
+        main: [entryPointFile]
     };
-
     let fileName = config.outputFileNamePattern || defaultOutputFileNamePattern;
     let outputPath = config.outputPath || resolve(webpackConfig.context, getOutputPath(config));
     let chunkFileName = config.outputChunkFileNamePattern || defaultChunkOutputFileNamePattern;
@@ -77,14 +76,6 @@ export const getBaseConfig = (config: IBuildConfig): Configuration => {
     }
 
     basePlugins.push(getLegacyDecoratorInject());
-
-    basePlugins.push(new MiniCssExtractPlugin({
-        // Options similar to the same options in webpackOptions.output
-        // all options are optional
-        filename: 'static/css/[name].css',
-        chunkFilename: 'static/css/[id].css',
-        ignoreOrder: false, // Enable to remove warnings about conflicting order
-      }))
 
     webpackConfig.plugins = basePlugins;
 

@@ -18,7 +18,6 @@ import * as styles3 from './some.tss.scss';
 import vertShader from "./test.vert";
 
 
-
 console.log('Raw file import', vertShader);
 console.log("material", material.mdcButton);
 

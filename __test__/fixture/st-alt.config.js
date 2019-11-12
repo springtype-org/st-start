@@ -1,6 +1,9 @@
 module.exports = [{
     entryPoint: 'src/index2.tsx',
-    bundleAnalyzerAutoOpen: false
+    bundleAnalyzerAutoOpen: false,
+    staticStyleEntryPoints: {
+        'src/material.static.scss': 'dist/material.static.css'
+    },
 }, {
     entryPoint: 'src/background.ts',
     enableBundleAnalyzer: false,

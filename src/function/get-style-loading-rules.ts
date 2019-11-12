@@ -2,50 +2,20 @@ import { RuleSetRule } from 'webpack';
 import { defaultCSSOutputFileNamePattern } from '../defaults';
 import { IBuildConfig } from './../interface/ibuild-config';
 import { getContextNodeModulesPath, getEnableSourceMaps, getInputPath } from './config-getters';
-import { requireFromContext, resolveFromContext } from './require-from-context';
-
-//const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+import { getPostCssConfig } from './get-postcss-plugins';
+import { resolveFromContext } from './require-from-context';
 
 export const getStyleLoadingRules = (config: IBuildConfig, isTypedStylesheet: boolean = false): Array<RuleSetRule> => {
-    const postCSSEnvPresetOptions: any = {
-        stage: 3, // TODO: config!
-    };
-
-    if (config.enablePostCSSAutoPrefixing) {
-        postCSSEnvPresetOptions.autoprefixer = {
-            // TODO: config?
-            flexbox: 'no-2009',
-        };
-    }
-
-    const postCSSPlugins: Array<any> = [];
-
-    if (config.enablePostCSS) {
-        postCSSPlugins.push(requireFromContext('postcss-flexbugs-fixes', config));
-        postCSSPlugins.push(requireFromContext('postcss-preset-env', config)(postCSSEnvPresetOptions));
-        postCSSPlugins.push(requireFromContext('postcss-nested', config));
-        postCSSPlugins.push(requireFromContext('postcss-normalize', config));
-    }
-
-    if (config.enablePostCSSLostGrid) {
-        postCSSPlugins.push(requireFromContext('lost', config));
-    }
-
-    const styleLoadingRules: Array<RuleSetRule> = [];
-    /*
-    if (isProduction()) {
-        styleLoadingRules.push({
-            loader: MiniCssExtractPlugin.loader
-        });
-    }*/
     
+    const styleLoadingRules: Array<RuleSetRule> = [];
+
     // enables CSS module imports like:
     // import * as style from 'foo.css';
     // console.log(style.bar); // "bar-foo-3hg4z"
     styleLoadingRules.push({
         loader: require.resolve('style-loader'),
     });
-    
+
     // generates .d.ts files corresponding module declaration files
     // for typed CSS module exports
     if (config.enableCssImportTypeDeclaration && isTypedStylesheet) {
@@ -92,7 +62,7 @@ export const getStyleLoadingRules = (config: IBuildConfig, isTypedStylesheet: bo
             loader: resolveFromContext('postcss-loader', config),
             options: {
                 ident: 'postcss',
-                plugins: () => postCSSPlugins,
+                plugins: () => getPostCssConfig(config),
             },
         });
     }

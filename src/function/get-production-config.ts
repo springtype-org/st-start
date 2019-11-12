@@ -4,15 +4,12 @@ import { defaultBrotliCompressionOptions, defaultBundleAnalyzerOptions, defaultE
 import { IBuildConfig } from '../interface/ibuild-config';
 import { InlineChunkHtmlPlugin } from '../plugin/inline-chunk-html';
 import { InterpolateHtmlPlugin } from '../plugin/interpolate-html';
-import { defaultChunkOutputFileNamePattern, defaultOutputFileNamePattern } from './../defaults';
 import { getDefinitions, getEnableSourceMaps, getOutputPath, isProduction } from './config-getters';
 import { generateManifest } from './generate-manifest';
 import { getBaseConfig } from './get-base-config';
 import { getDefaultIndexHTMLConfig } from './get-default-index-html-config';
 import { requireFromContext } from './require-from-context';
-
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 export const getProductionConfig = (config: IBuildConfig): Configuration => {
     const webpackConfig = getBaseConfig(config);
@@ -35,13 +32,6 @@ export const getProductionConfig = (config: IBuildConfig): Configuration => {
         }
 
         productionPluginPipeline.push(new InterpolateHtmlPlugin(HtmlWebpackPlugin, getDefinitions(config)));
-
-        productionPluginPipeline.push(
-            new MiniCssExtractPlugin({
-                filename: defaultOutputFileNamePattern,
-                chunkFilename: defaultChunkOutputFileNamePattern,
-            }),
-        );
 
         if (config.enableManifestGeneration) {
             productionPluginPipeline.push(

@@ -1,6 +1,7 @@
 import { Environment } from './environment';
 
 export interface IBuildConfig {
+
     // --- RUNTIME
 
     // overrides process.env.NODE_ENV
@@ -151,6 +152,13 @@ export interface IBuildConfig {
     rawFileImportExtensionTest?: RegExp; // default: /\.(txt|vert|frag)$/i
 
     // --- STYLING, CSS, SASS/SCSS, PostCSS SUPPORT
+
+    // a list of CSS, SASS/SCSS, PostCSS files to process statically and
+    // write out to the output path: e.g. src/input.global.scss -> dist/my-output.css
+    // transformations apply according to the rest of the configuration (enableSass, ...)
+    staticStyleEntryPoints?: {
+        [inputPath: string]: string; // input path -> output path
+    };
 
     // imported as CSS modules (with scoping)
     testCSSTranspileFileExtensions?: RegExp; // default: /\.tss\.(css|sass|scss)$/i
