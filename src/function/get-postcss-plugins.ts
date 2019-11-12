@@ -15,6 +15,8 @@ export const getPostCssConfig = (config: IBuildConfig): Array<any> => {
     const postCSSPlugins: Array<any> = [];
 
     if (config.enablePostCSS) {
+        // TODO: might use postcss-import too? https://github.com/postcss/postcss-import 
+        // Beware of import paths then (node_modules) etc.
         postCSSPlugins.push(requireFromContext('postcss-flexbugs-fixes', config));
         postCSSPlugins.push(requireFromContext('postcss-preset-env', config)(postCSSEnvPresetOptions));
         postCSSPlugins.push(requireFromContext('postcss-nested', config));

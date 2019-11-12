@@ -26,8 +26,6 @@ export const transformStyle = async (filePath: string, outputPath: string, confi
         return;
     } 
 
-    writeFileSync(hashFile, contentHash);
-
     let map;
 
     // 1. step: SASS/SCSS transform
@@ -40,7 +38,8 @@ export const transformStyle = async (filePath: string, outputPath: string, confi
         const sassResult = sass.renderSync({
             data: css,
             outFile: outputPath,
-            sourceMap: true
+            sourceMap: true,
+            includePaths: ['node_modules', ...(config.staticStyleResolvePaths || [])]
         });
 
         css = sassResult.css.toString('utf8');
@@ -54,8 +53,8 @@ export const transformStyle = async (filePath: string, outputPath: string, confi
 
         const postcss = require(resolveFromContext('postcss', config));
         const postCssTransformResult = await postcss(getPostCssConfig(config)).process(css, {
-            from: 'src/app.css',
-            to: 'dest/app.css',
+            from: filePath,
+            to: outputPath,
         });
         css = postCssTransformResult.css;
 
@@ -71,4 +70,7 @@ export const transformStyle = async (filePath: string, outputPath: string, confi
 
     // write-out CSS in any case
     writeFileSync(outputPath, css);
+
+    // write-out hash for content caching 
+    writeFileSync(hashFile, contentHash);
 };

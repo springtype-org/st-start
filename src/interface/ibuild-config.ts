@@ -160,6 +160,9 @@ export interface IBuildConfig {
         [inputPath: string]: string; // input path -> output path
     };
 
+    // paths to look for e.g. SASS/SCSS files to resolve for @import statements
+    staticStyleResolvePaths?: Array<string>; // default: ['node_modules']
+
     // imported as CSS modules (with scoping)
     testCSSTranspileFileExtensions?: RegExp; // default: /\.tss\.(css|sass|scss)$/i
 
