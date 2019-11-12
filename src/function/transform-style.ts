@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
 import { readFileSync, writeFileSync } from 'fs';
-import { relative } from 'path';
+import { dirname, relative } from 'path';
+import { mkdir } from "st-mkdir";
 import { IBuildConfig } from './../interface/ibuild-config';
 import { getContextPath } from './config-getters';
 import { getPostCssConfig } from './get-postcss-plugins';
@@ -10,6 +11,10 @@ import { resolveFromContext } from './require-from-context';
 export const transformStyle = async (filePath: string, outputPath: string, config: IBuildConfig) => {
     let css = readFileSync(filePath, 'utf8');
     const hashFile = outputPath + '.md5';
+
+    // prepare output path
+    mkdir(dirname(outputPath));
+
     let prevHash;
     try {
         prevHash = readFileSync(hashFile, 'utf8');
@@ -58,9 +63,10 @@ export const transformStyle = async (filePath: string, outputPath: string, confi
             map = postCssTransformResult.map;
         }
         
-        if (postCssTransformResult.map) {
-            writeFileSync(outputPath + '.map', map);
-        }
+    }
+
+    if (map) {
+        writeFileSync(outputPath + '.map', map);
     }
 
     // write-out CSS in any case
