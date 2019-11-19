@@ -9600,6 +9600,13 @@ st-mkdir@^1.0.0-alpha.4:
     st-cp "^2.0.0-alpha.4"
     st-rm-rf "^2.0.0-alpha.8"
 
+st-mkdir@^1.0.0-alpha.5:
+  version "1.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/st-mkdir/-/st-mkdir-1.0.0-alpha.5.tgz#d77782cfa427331534d0ee8451acaea471303d1b"
+  integrity sha512-aNDHjce2VovCoqQXfb4SUGUmeq9wY7k6vojHjTD3eXYzVe+2EHa0UdXHT9syEM4liI8SYmbY4QIRHo5xGIivLA==
+  dependencies:
+    chalk "^2.4.2"
+
 st-rm-rf@^2.0.0-alpha.8:
   version "2.0.0-alpha.8"
   resolved "https://registry.yarnpkg.com/st-rm-rf/-/st-rm-rf-2.0.0-alpha.8.tgz#4aa761378d4d7bae2dd6fe19516401cddd4c6c50"

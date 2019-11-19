@@ -21,7 +21,7 @@ export const getDevelopmentConfig = (config: IBuildConfig): Configuration => {
     if (!config.isNodeJsTarget) {
         developmentPluginPipeline.push(
             new (require('html-webpack-plugin'))({
-                ...getDefaultIndexHTMLConfig(config, webpackConfig),
+                ...getDefaultIndexHTMLConfig(config),
             }),
         );
     }

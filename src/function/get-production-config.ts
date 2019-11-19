@@ -22,7 +22,7 @@ export const getProductionConfig = (config: IBuildConfig): Configuration => {
     if (!config.isNodeJsTarget) {
         productionPluginPipeline.push(
             new HtmlWebpackPlugin({
-                ...getDefaultIndexHTMLConfig(config, webpackConfig),
+                ...getDefaultIndexHTMLConfig(config),
                 minify: defaultMinifyOptions,
             }),
         );
