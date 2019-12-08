@@ -43,7 +43,7 @@ export const getBaseConfig = (config: IBuildConfig): Configuration => {
         main: [entryPointFile]
     };
     let fileName = config.outputFileNamePattern || defaultOutputFileNamePattern;
-    let outputPath = config.outputPath || resolve(webpackConfig.context, getOutputPath(config));
+    let outputPath = config.outputPath ? resolve(config.outputPath) : resolve(webpackConfig.context, getOutputPath(config));
     let chunkFileName = config.outputChunkFileNamePattern || defaultChunkOutputFileNamePattern;
 
     if (config.singleFileOutput) {
