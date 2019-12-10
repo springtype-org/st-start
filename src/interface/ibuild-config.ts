@@ -52,6 +52,10 @@ export interface IBuildConfig {
 
     // --- TS/TSX TO JS TRANSPILATION
 
+    // enables writing out type information to reflect the types at runtime
+    // using https://github.com/leonardfactory/babel-plugin-transform-typescript-metadata
+    enableReflectMetadata?: boolean;
+
     // enables eslint linting and auto-formatting. Requires a .eslintrc.js file to be existing
     // somewhere in the project path
     enableLinting?: boolean; // default: false

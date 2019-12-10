@@ -26,7 +26,7 @@ export const getModuleLoadingRules = (
         });
     }
 
-    const babelConfig = getBabelConfig();
+    const babelConfig = getBabelConfig(config);
     
     transpilationRulesOneOf.push({
         test: config.testJSTranspileFileExtensions || defaultTestJSTranspileFileExtensions,

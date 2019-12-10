@@ -1,6 +1,6 @@
 {
     "name": "st-start",
-    "version": "2.0.0-beta.28",
+    "version": "2.0.0-beta.29",
     "publishConfig": {
         "access": "public"
     },
@@ -76,6 +76,7 @@
         "babel-plugin-dynamic-import-node": "^2.3.0",
         "babel-plugin-macros": "^2.6.1",
         "babel-plugin-named-asset-import": "^0.3.4",
+        "babel-plugin-transform-typescript-metadata": "^0.2.2",
         "babel-preset-react-app": "^9.0.2",
         "case-sensitive-paths-webpack-plugin": "2.2.0",
         "chalk": "^2.4.2",

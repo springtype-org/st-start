@@ -2742,6 +2742,13 @@ babel-plugin-transform-strict-mode@^6.24.1:
     babel-runtime "^6.22.0"
     babel-types "^6.24.1"
 
+babel-plugin-transform-typescript-metadata@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-typescript-metadata/-/babel-plugin-transform-typescript-metadata-0.2.2.tgz#fc44611187409ed9d5cb372ca2f85939a359cada"
+  integrity sha512-wWRw1p3IDNZN8l3UOLgeScq9Nhh4lvxT7ZOvUzYi5sMw8lUWW+KdRlnBeQKehHAsgDs5TR6PvMJmsQ6e6NmKCg==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.0.0"
+
 babel-preset-env@^1.1.8:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/babel-preset-env/-/babel-preset-env-1.7.0.tgz#dea79fa4ebeb883cd35dab07e260c1c9c04df77a"

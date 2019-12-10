@@ -2,13 +2,14 @@ import { dirname } from "path";
 import { defaultCoreJsVersion, defaultJSXPragma } from "../defaults";
 import { isDevelopment, isTest } from "./config-getters";
 import { getPlatform } from "./get-platform";
+import { IBuildConfig } from "../interface/ibuild-config";
 
 export interface IBabelConfig {
     presets: Array<any>;
     plugins: Array<any>;
 }
 
-export const getBabelConfig = (): IBabelConfig => {
+export const getBabelConfig = (config: IBuildConfig): IBabelConfig => {
     const presetEnv = [require('@babel/preset-env')];
     const platform = getPlatform();
 
@@ -48,7 +49,6 @@ export const getBabelConfig = (): IBabelConfig => {
     ];
 
     const plugins = [
-        //require('babel-plugin-macros'),
         [
             require('@babel/plugin-transform-destructuring'),
             {
@@ -66,7 +66,19 @@ export const getBabelConfig = (): IBabelConfig => {
                     'useDebugValue',
                 ],
             },
-        ],
+        ]
+    ];
+
+    if (config.enableReflectMetadata) {
+        plugins.push(
+            // write out type metadata just like tsc with emitDecoratorMetadata does
+            [
+                require("babel-plugin-transform-typescript-metadata")
+            ]
+        );
+    }
+
+    plugins.push(
         // legacy TypeScript decorators
         [
             require('../loaders/st-transform-decorator'),
@@ -100,8 +112,8 @@ export const getBabelConfig = (): IBabelConfig => {
                     ? dirname(require.resolve('@babel/runtime/package.json'))
                     : undefined,
             },
-        ],
-    ];
+        ]
+    );
 
     plugins.push(
         // adds syntax support for dynamic import()
