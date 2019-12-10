@@ -93,6 +93,10 @@ export const getBabelConfig = (config: IBuildConfig): IBabelConfig => {
                 loose: true,
             },
         ],
+        // support for parameter decorators just like typescript
+        [
+            require('babel-plugin-parameter-decorator')
+        ],
         // {...other, foo: 'bar'} support
         [
             require('@babel/plugin-proposal-object-rest-spread'),
