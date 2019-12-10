@@ -1,0 +1,5 @@
+- Exit with code 1 on prod error
+- Support for st.config.json and st.*.config.json 
+- JSON schema for st.config.json
+- Workspace config for JSON schema support VSCode / IntelliJ
+- Re-enable Fork TS TypeChecker / test 
