@@ -8,6 +8,7 @@ import { getProductionConfig } from './get-production-config';
 import { log } from './log';
 import { requireFromContext } from './require-from-context';
 import { transformStaticStyleFiles } from './transform-static-style-files';
+import { getWebpackMode } from './get-webpack-mode';
 
 export const startSingle = async (
     config: IBuildConfig,
@@ -15,10 +16,41 @@ export const startSingle = async (
     reject: Function,
     taskNr?: number,
 ): Promise<void> => {
-    const webpackConfig = getEnv() === 'production' ? getProductionConfig(config) : getDevelopmentConfig(config);
+
+    // make sure to set environment based on NODE_ENV
+    config.env = config.env || getEnv();
+
+    const webpackMode = getWebpackMode(config);
+
+    log(`Setting environment for bundling (webpack mode): ${webpackMode}`);
+
+    const webpackConfig = webpackMode === 'production' ? getProductionConfig(config) : getDevelopmentConfig(config);
     const webpack = requireFromContext('webpack', config)(webpackConfig);
     const devServerAlreadyRunning = typeof taskNr !== 'undefined' && taskNr !== 0;
     const entryPointFile = getEntryPointFilePath(config);
+
+    const startDevServer = () => {
+        if (devServerAlreadyRunning) {
+            log(
+                'DevServer has been started already. Falling back to default build mode (first come, first serve).',
+                'warning',
+            );
+        }
+
+        const port = config.port || defaultDevServerPort;
+        const devServer = new (requireFromContext('webpack-dev-server', config))(webpack, {
+            ...defaultDevServerOptions,
+            publicPath: webpackConfig!.output!.publicPath,
+            port,
+            proxy: config.proxy,
+            public: `http://localhost:${port}`,
+            disableHostCheck: config.proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
+            contentBase: config.assetsPath || webpackConfig.context,
+            stats: webpackConfig.stats,
+        });
+
+        devServer.listen(config.port || defaultDevServerPort, config.host || defaultDevServerHost);
+    }
 
     // 1. static style transformation
     await transformStaticStyleFiles(config);
@@ -29,28 +61,12 @@ export const startSingle = async (
         return;
     }
 
-    if (getEnv() === 'development' && !config.isNodeJsTarget && !devServerAlreadyRunning) {
+    if (webpackMode === 'development' && !config.isNodeJsTarget &&
+        !devServerAlreadyRunning && config.watchMode !== false) {
         log('Entering DevServer watch mode...');
 
-        const devServer = new (requireFromContext('webpack-dev-server', config))(webpack, {
-            ...defaultDevServerOptions,
-            publicPath: webpackConfig!.output!.publicPath,
-            port: config.port || defaultDevServerPort,
-            proxy: config.proxy,
-            public: config.publicUrl,
-            disableHostCheck: config.proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
-            contentBase: config.assetsPath || webpackConfig.context,
-            stats: webpackConfig.stats,
-        });
-
-        devServer.listen(config.port || defaultDevServerPort, config.host || defaultDevServerHost);
+        startDevServer();
     } else {
-        if (devServerAlreadyRunning) {
-            log(
-                'DevServer has been started already. Falling back to default build mode (first come, first serve).',
-                'warning',
-            );
-        }
 
         webpack.run((err: any, stats: any) => {
             if (err || stats.hasErrors()) {

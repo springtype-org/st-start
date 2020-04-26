@@ -6,14 +6,19 @@ import { execute } from './execute';
 import { getPeerDependencies } from './get-peer-dependencies';
 
 export const installPeerDependencies = (config: IBuildConfig) => {
-    const peerDependencies = getPeerDependencies(config);
+    const expectedPeerDependencies = getPeerDependencies(config);
     const missingPeerDependencies = [];
-    const devDependencies =
+    const installedDevDependencies =
         JSON.parse(readFileSync(resolve(getContextPath(config), 'package.json'), 'utf8')).devDependencies || {};
 
-    for (let dependency of peerDependencies) {
-        if (!devDependencies[dependency.split('@^')[0]]) {
-            missingPeerDependencies.push(dependency);
+    for (let expectedDependency of expectedPeerDependencies) {
+
+        const expectedDependencyParts = expectedDependency.split('@');
+        const expectedVersion = expectedDependencyParts[1];
+        const expectedPackageName = expectedDependencyParts[0];
+
+        if (!installedDevDependencies[expectedPackageName] || installedDevDependencies[expectedPackageName] !== expectedVersion) {
+            missingPeerDependencies.push(expectedDependency);
         }
     }
 

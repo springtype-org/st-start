@@ -1,0 +1,1 @@
+export type BundlePlatform = 'browser' | 'nodejs';

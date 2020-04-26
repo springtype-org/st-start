@@ -2,30 +2,27 @@ import { relative, resolve } from 'path';
 import webpack, { Configuration } from 'webpack';
 import { defaultChunkOutputFileNamePattern, defaultDevelopmentDevTool, defaultModuleResolveFileExtensions, defaultOutputFileNamePattern, defaultProductionDevTool, defaultPublicPath, defaultStatsConfig } from '../defaults';
 import { IBuildConfig } from '../interface/ibuild-config';
-import { Platform } from '../interface/platform';
 import { defaultInputPath } from './../defaults';
-import { getContextNodeModulesPath, getContextPath, getDefinitionsStringified, getEnv, getOutputPath, isDevelopment, isProduction } from './config-getters';
+import { getContextNodeModulesPath, getContextPath, getDefinitionsStringified, getOutputPath, isDevelopment, isProduction } from './config-getters';
 import { getEntryPointFilePath } from './get-entrypoint-filepath';
 import { getLegacyDecoratorInject } from './get-legacy-decorator-inject';
 import { getModuleLoadingRules } from './get-module-loading-rules';
-import { getPlatform } from './get-platform';
+import { getBundlePlatform } from './get-bundle-platform';
 import { log } from './log';
 import { notifyOnError } from './notify-on-error';
 import { requireFromContext } from './require-from-context';
+import { BundlePlatform } from '../interface/bundle-platform';
+import { getWebpackMode } from './get-webpack-mode';
 
 export const getBaseConfig = (config: IBuildConfig): Configuration => {
     const webpackConfig: Partial<Configuration> = {};
 
     if (config.isNodeJsTarget) {
-        process.env.NODE_PLATFORM = <Platform>'nodejs';
+        process.env.NODE_PLATFORM = <BundlePlatform>'nodejs';
     }
 
-    const platform = getPlatform();
-    const env = (config.env = getEnv());
-
-    // webpack mode doesn't support environment 'test'
-    // we fall back to 'production' in this case
-    webpackConfig.mode = env === 'test' ? 'production' : env;
+    const platform = getBundlePlatform();
+    webpackConfig.mode = getWebpackMode(config);
     webpackConfig.context = getContextPath(config);
     webpackConfig.watch = !!config.watchMode;
 

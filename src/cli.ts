@@ -6,9 +6,9 @@ import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { defaultCustomConfigFileName } from './defaults';
 import { log } from './function/log';
-import { readDotEnv } from './function/read-dot-env';
 import { start } from './function/start';
 import { IBuildConfig } from './interface/ibuild-config';
+import { readStConfig } from './function/read-st-config';
 
 const packageJson = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8'));
 
@@ -57,16 +57,8 @@ const program = new commander.Command(packageJson.name)
 
     let runtimeConfiguration: IBuildConfig = {};
 
-    // read .env files
-    readDotEnv();
 
     // CLI parameters override .env settings
-
-    if (program.env) {
-        log(`Using CLI-provided environment: ${program.env}`);
-        runtimeConfiguration.env = program.env;
-        process.env.NODE_ENV = program.env;
-    }
 
     if (program.platform) {
         if (program.platform === 'nodejs') {
@@ -84,8 +76,17 @@ const program = new commander.Command(packageJson.name)
     let configuration: IBuildConfig | Array<IBuildConfig> = {};
     if (existsSync(configFile)) {
         log(`Using local config file: ${configFile}`);
-        configuration = require(configFile) || {};
+
+        if (configFile.indexOf('.js') > -1) {
+            configuration = require(configFile) || {};
+        } else if (configFile.indexOf('.ts') > -1) {
+            configuration = await readStConfig(configFile) || {};
+        }
     }
+
+    if (program.env) {
+        runtimeConfiguration.env = program.env;
+    } 
 
     try {
         start(runtimeConfiguration, configuration);

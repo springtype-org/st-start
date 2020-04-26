@@ -1,11 +1,13 @@
-import { Environment } from './interface/environment';
+import { BundleEnvironment } from './interface/bundle-environment';
+import { BundlePlatform } from './interface/bundle-platform';
 
-// --- RUNTIME
-export const defaultRuntimeEnvironment: Environment = 'development';
+// --- BUNDLE
+export const defaultBundleEnvironment: BundleEnvironment = 'development';
+export const defaultBundlePlatform: BundlePlatform = 'nodejs';
 
 // --- PROJECT LAYOUT
 
-export const defaultCustomConfigFileName = 'st.config.js';
+export const defaultCustomConfigFileName = 'st.config.ts';
 export const defaultInputPath = 'src';
 export const defaultOutputPath = 'dist';
 

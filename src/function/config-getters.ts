@@ -1,6 +1,5 @@
 import { resolve } from 'path';
-import { defaultEnableSourceMapInProduction, defaultInputPath, defaultOutputPath } from '../defaults';
-import { Environment } from './../interface/environment';
+import { defaultEnableSourceMapInProduction, defaultInputPath, defaultOutputPath, defaultBundleEnvironment } from '../defaults';
 import { IBuildConfig } from './../interface/ibuild-config';
 import { stringifyDefinitions } from './stringify-definitions';
 
@@ -14,16 +13,9 @@ export const getIndexTSDefaultPath = (config: IBuildConfig): string =>
     resolve(getContextPath(config), getInputPath(config), 'index.ts');
 export const getIndexTSXDefaultPath = (config: IBuildConfig): string =>
     resolve(getContextPath(config), getInputPath(config), 'index.tsx');
-export const getEnv = (): Environment => {
-    switch (process.env.NODE_ENV) {
-        case 'production':
-            return 'production';
-        case 'test':
-            return 'test';
-        default:
-        case 'development':
-            return 'development';
-    }
+
+export const getEnv = (): string => {
+    return process.env.NODE_ENV as string || defaultBundleEnvironment;
 };
 
 export const getDefinitions = (config: IBuildConfig) => {
@@ -54,7 +46,6 @@ export const getDefinitionsStringified = (config: IBuildConfig) => {
 
 export const isDevelopment = (): boolean => getEnv() === 'development';
 export const isProduction = (): boolean => getEnv() === 'production';
-export const isTest = (): boolean => getEnv() === 'test';
 
 export const getEnableSourceMaps = (config: IBuildConfig): boolean =>
     getEnv() === 'production' ? config.enableSourceMapInProduction || defaultEnableSourceMapInProduction : true;

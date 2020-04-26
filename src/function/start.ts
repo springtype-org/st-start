@@ -3,6 +3,8 @@ import { enableDefaultFeatures } from './enable-default-features';
 import { installPeerDependencies } from './install-peer-dependencies';
 import { log } from './log';
 import { startSingle } from './start-single';
+import { defaultBundleEnvironment } from '../defaults';
+import { readDotEnv } from './read-dot-env';
 
 export const start = async (
     runtimeConfiguration: IBuildConfig,
@@ -25,6 +27,15 @@ export const start = async (
         } else {
             try {
                 const configuration = { ...config, ...runtimeConfiguration };
+
+                // set NODE_ENV based on config, runtime config or fallback to "development"
+                process.env.NODE_ENV = configuration.env || defaultBundleEnvironment;
+
+                // read .env files
+                readDotEnv();
+
+                log(`Setting environment: ${process.env.NODE_ENV}`);
+
                 enableDefaultFeatures(configuration);
 
                 log(`Installing missing peer dependencies (based on features enabled in configuration)...`);

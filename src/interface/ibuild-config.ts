@@ -1,11 +1,16 @@
-import { Environment } from './environment';
+import { BundleEnvironment } from './bundle-environment';
 
 export interface IBuildConfig {
 
     // --- RUNTIME
 
+    // support for custom environment name mappings
+    environments?: {
+        [key: string]: BundleEnvironment;
+    };
+
     // overrides process.env.NODE_ENV
-    env?: Environment; // default: 'development'
+    env?: string; // default: 'development'
 
     // builds for the Node.js runtime environment, disables DevServer, etc.
     isNodeJsTarget?: boolean; // default: false

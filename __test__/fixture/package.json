@@ -4,7 +4,8 @@
     "description": "Test fixture to bundle",
     "scripts": {
         "start:prod": "node ../../dist/cli.js -e production -c st-alt.config.js",
-        "start": "node ../../dist/cli.js -e development -c st-alt.config.js"
+        "start": "node ../../dist/cli.js -e development -c st-alt.config.js",
+        "start:ts": "node ../../dist/cli.js -e nightly -c st.config.ts"
     },
     "author": "Aron Homberg <info@aron-homberg.de>",
     "license": "MIT",
@@ -15,20 +16,20 @@
         "st-start": "../../dist"
     },
     "devDependencies": {
-        "autoprefixer": "^9.7.0",
-        "dts-css-modules-loader": "^1.0.1",
+        "autoprefixer": "^9.7.6",
+        "dts-css-modules-loader": "^1.0.3",
         "lost": "^8.3.1",
-        "node-notifier": "^6.0.0",
-        "node-sass": "^4.13.0",
-        "postcss-flexbugs-fixes": "^4.1.0",
+        "node-notifier": "^7.0.0",
+        "node-sass": "^4.14.0",
+        "postcss-flexbugs-fixes": "^4.2.0",
         "postcss-loader": "^3.0.0",
-        "postcss-nested": "^4.1.2",
-        "postcss-normalize": "^8.0.1",
+        "postcss-nested": "^4.2.1",
+        "postcss-normalize": "^9.0.0",
         "postcss-preset-env": "^6.7.0",
-        "postcss-safe-parser": "4.0.1",
-        "raw-loader": "^3.1.0",
-        "resolve-url-loader": "^3.1.0",
-        "sass-loader": "^8.0.0",
-        "webpack-bundle-analyzer": "^3.6.0"
+        "postcss-safe-parser": "^4.0.2",
+        "raw-loader": "^4.0.1",
+        "resolve-url-loader": "^3.1.1",
+        "sass-loader": "^8.0.2",
+        "webpack-bundle-analyzer": "^3.7.0"
     }
 }

@@ -1,6 +1,6 @@
-import { Environment } from "../interface/environment";
+import { BundleEnvironment } from "../interface/bundle-environment";
 
-export const getCacheIdent = (cacheIdentifier: Environment, packages: Array<string>): string => {
+export const getCacheIdent = (cacheIdentifier: BundleEnvironment, packages: Array<string>): string => {
     for (const packageName of packages) {
         cacheIdentifier += `:${packageName}@`;
         try {

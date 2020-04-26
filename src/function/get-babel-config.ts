@@ -1,7 +1,7 @@
 import { dirname } from "path";
 import { defaultCoreJsVersion, defaultJSXPragma } from "../defaults";
-import { isDevelopment, isTest } from "./config-getters";
-import { getPlatform } from "./get-platform";
+import { isDevelopment } from "./config-getters";
+import { getBundlePlatform } from "./get-bundle-platform";
 import { IBuildConfig } from "../interface/ibuild-config";
 
 export interface IBabelConfig {
@@ -11,7 +11,7 @@ export interface IBabelConfig {
 
 export const getBabelConfig = (config: IBuildConfig): IBabelConfig => {
     const presetEnv = [require('@babel/preset-env')];
-    const platform = getPlatform();
+    const platform = getBundlePlatform();
 
     if (platform === 'nodejs') {
         presetEnv.push({
@@ -41,7 +41,7 @@ export const getBabelConfig = (config: IBuildConfig): IBabelConfig => {
                 pragma: defaultJSXPragma,
                 pragmaFrag: defaultJSXPragma,
                 // adds a stack trace to warnings
-                development: isDevelopment() || isTest(),
+                development: isDevelopment(),
                 throwIfNamespace: false,
             },
         ],
@@ -124,7 +124,7 @@ export const getBabelConfig = (config: IBuildConfig): IBabelConfig => {
         require('@babel/plugin-syntax-dynamic-import'),
     );
 
-    if (getPlatform() === 'nodejs') {
+    if (getBundlePlatform() === 'nodejs') {
         plugins.push(
             // transforms dynamic import to require
             require('babel-plugin-dynamic-import-node'),

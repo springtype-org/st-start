@@ -1,71 +1,88 @@
+import { resolve } from "path";
+import { readFileSync } from "fs";
+
+const getPeerDependencies = (packageNames: Array<string>) => {
+
+    // lookup versions from devDependencies (package.json)
+    const devDependencies = 
+        JSON.parse(readFileSync(resolve(__dirname, '../package.json'), { encoding: 'utf8' })).devDependencies;
+
+    const peerDependencies: {
+        [packageName: string]: string;
+    } = {};
+
+    for (const packageName of packageNames) {
+        peerDependencies[packageName] = devDependencies[packageName];
+    }
+    return peerDependencies;
+}
+
 export const peerDependencies: {
     [dependencyName: string]: string;
-} = {
-
-    // !! versions must be prefixed with a ^ !!
+} = getPeerDependencies([
 
     // sass
-    'node-sass': '^4.13.0',
-    'sass-loader': '^8.0.0',
+    'node-sass', 'sass-loader',
 
     // cssImportTypeDeclaration
-    'dts-css-modules-loader': '^1.0.1',
+    'dts-css-modules-loader',
 
     // postcss
-    'postcss-loader': '^3.0.0',
-    'postcss-preset-env': '^6.7.0',
-    'postcss-nested': '^4.1.2',
-    'postcss-normalize': '^8.0.1',
-    'postcss-flexbugs-fixes': '^4.1.0',
-    'postcss-safe-parser': '^4.0.1',
+    'postcss-loader',
+    'postcss-preset-env',
+    'postcss-nested',
+    'postcss-normalize',
+    'postcss-flexbugs-fixes',
+    'postcss-safe-parser',
 
     // sass / postcss
-    'resolve-url-loader': '^3.1.0',
+    'resolve-url-loader',
 
     // autoprefixer
-    autoprefixer: '^9.7.1',
+    'autoprefixer',
 
     // brotliCompression
-    'brotli-webpack-plugin': '^1.1.0',
+    'brotli-webpack-plugin',
 
     // manifest
-    'webpack-manifest-plugin': '^2.2.0',
+    'webpack-manifest-plugin',
 
     // dependencyAnalyzer
-    'webpack-bundle-analyzer': '^3.6.0',
+    'webpack-bundle-analyzer',
 
     // lostGrid
-    lost: '^8.3.1',
+    'lost',
 
     // notifications
-    'node-notifier': '^6.0.0',
+    'node-notifier',
 
     // linting
-    eslint: '^6.6.0',
-    'eslint-loader': '^3.0.2',
-    'babel-eslint': '^10.0.3',
-    '@typescript-eslint/eslint-plugin': '^2.6.0',
-    '@typescript-eslint/parser': '^2.6.0',
+    'eslint',
+    'eslint-loader',
+    'babel-eslint',
+    '@typescript-eslint/eslint-plugin',
+    '@typescript-eslint/parser',
 
     // yarnPnp
-    'ts-pnp': '^1.1.4',
-    'pnp-webpack-plugin': '^1.5.0',
+    'ts-pnp',
+    'pnp-webpack-plugin',
 
     // serviceWorkerScript
-    'workbox-webpack-plugin': '^4.3.1',
+    'workbox-webpack-plugin',
 
     // imageInlining
-    'url-loader': '^2.2.0',
+    'url-loader',
 
     // postcss, linting, yarnPnp, typeScriptTypeChecking
-    'react-dev-utils': '^9.1.0',
+    'react-dev-utils',
 
-    // typeScriptTypeChecking
-    typescript: '^3.6.4',
+    'typescript',
 
     // rawLoader
-    'raw-loader': '^3.1.0',
-};
+    'raw-loader',
+
+    'browserslist'
+]);
 
 export const featureToPeerDependencyMap = {
     sass: ['sass-loader', 'node-sass', 'resolve-url-loader'],
@@ -97,5 +114,5 @@ export const featureToPeerDependencyMap = {
     yarnPnp: ['pnp-webpack-plugin', 'ts-pnp', 'react-dev-utils'],
     serviceWorkerScript: ['workbox-webpack-plugin'],
     imageInlining: ['url-loader'],
-    typeScriptTypeChecking: ['typescript', 'react-dev-utils'],
+    typeScriptTypeChecking: ['typescript', 'react-dev-utils']
 };
