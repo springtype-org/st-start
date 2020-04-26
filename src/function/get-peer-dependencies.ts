@@ -1,8 +1,8 @@
-import { featureToPeerDependencyMap, peerDependencies } from '../peer-dependencies';
+import { featureToPeerDependencyMap, peerDependencies, getExpectedPeerDependencyVersions } from '../peer-dependencies';
 import { IBuildConfig } from './../interface/ibuild-config';
 
 export const getPeerDependencies = (config: IBuildConfig): Array<string> => {
-    let requiredPeerDependencies = [];
+    let requiredPeerDependencies = [...featureToPeerDependencyMap.webpack];
 
     if (config.enableSass) {
         requiredPeerDependencies.push(...featureToPeerDependencyMap.sass);
@@ -64,9 +64,11 @@ export const getPeerDependencies = (config: IBuildConfig): Array<string> => {
         requiredPeerDependencies.push(...featureToPeerDependencyMap.rawLoader);
     }
 
+    const peerDependencyVersions = getExpectedPeerDependencyVersions(peerDependencies);
+
     // substitute dependency names by dependency@version to guarantee comparibility
     requiredPeerDependencies = requiredPeerDependencies.map((peerDependencyName: string) => {
-        return `${peerDependencyName}@${peerDependencies[peerDependencyName]}`;
+        return `${peerDependencyName}@${peerDependencyVersions[peerDependencyName]}`;
     });
 
     return requiredPeerDependencies;

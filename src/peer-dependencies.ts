@@ -1,11 +1,15 @@
-import { resolve } from "path";
 import { readFileSync } from "fs";
+import { resolve } from "path";
 
-const getPeerDependencies = (packageNames: Array<string>) => {
+export const getExpectedPeerDependencyVersions = (packageNames: Array<string>) => {
+
+    const packageJSONStStart = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8'));
 
     // lookup versions from devDependencies (package.json)
-    const devDependencies = 
-        JSON.parse(readFileSync(resolve(__dirname, '../package.json'), { encoding: 'utf8' })).devDependencies;
+    const devDependencies = {
+        ...packageJSONStStart.dependencies,
+        ...packageJSONStStart.devDependencies,
+    };
 
     const peerDependencies: {
         [packageName: string]: string;
@@ -17,15 +21,16 @@ const getPeerDependencies = (packageNames: Array<string>) => {
     return peerDependencies;
 }
 
-export const peerDependencies: {
-    [dependencyName: string]: string;
-} = getPeerDependencies([
+export const peerDependencies: Array<string> = [
+
+    'webpack',
 
     // sass
     'node-sass', 'sass-loader',
 
     // cssImportTypeDeclaration
     'dts-css-modules-loader',
+    'css-loader',
 
     // postcss
     'postcss-loader',
@@ -34,6 +39,7 @@ export const peerDependencies: {
     'postcss-normalize',
     'postcss-flexbugs-fixes',
     'postcss-safe-parser',
+    'browserslist',
 
     // sass / postcss
     'resolve-url-loader',
@@ -80,13 +86,12 @@ export const peerDependencies: {
 
     // rawLoader
     'raw-loader',
-
-    'browserslist'
-]);
+];
 
 export const featureToPeerDependencyMap = {
+    webpack: ['webpack'],
     sass: ['sass-loader', 'node-sass', 'resolve-url-loader'],
-    cssImportTypeDeclaration: ['dts-css-modules-loader'],
+    cssImportTypeDeclaration: ['dts-css-modules-loader', 'css-loader'],
     postcss: [
         'postcss-loader',
         'postcss-preset-env',
@@ -95,6 +100,7 @@ export const featureToPeerDependencyMap = {
         'postcss-flexbugs-fixes',
         'postcss-normalize',
         'postcss-safe-parser',
+        'browserslist'
     ],
     rawLoader: ['raw-loader'],
     autoprefixer: ['autoprefixer'],

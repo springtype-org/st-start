@@ -1,15 +1,15 @@
-import { readFileSync } from 'fs';
+
 import { resolve } from 'path';
 import { IBuildConfig } from './../interface/ibuild-config';
 import { getContextPath } from './config-getters';
 import { execute } from './execute';
 import { getPeerDependencies } from './get-peer-dependencies';
+import { getInstalledPeerDependencies } from './get-installed-peer-dependencies';
 
 export const installPeerDependencies = (config: IBuildConfig) => {
     const expectedPeerDependencies = getPeerDependencies(config);
     const missingPeerDependencies = [];
-    const installedDevDependencies =
-        JSON.parse(readFileSync(resolve(getContextPath(config), 'package.json'), 'utf8')).devDependencies || {};
+    const installedDevDependencies = getInstalledPeerDependencies(config);
 
     for (let expectedDependency of expectedPeerDependencies) {
 
