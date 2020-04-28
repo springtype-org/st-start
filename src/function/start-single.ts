@@ -44,7 +44,7 @@ export const startSingle = async (
             port,
             proxy: config.proxy,
             public: `http://localhost:${port}`,
-            disableHostCheck: config.proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
+            disableHostCheck: !!config.proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',
             contentBase: config.assetsPath || webpackConfig.context,
             stats: webpackConfig.stats,
         });

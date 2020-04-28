@@ -6,6 +6,8 @@ export interface IBuildConfig {
 
     // support for custom environment name mappings
     environments?: {
+
+        // e.g. "staging": "development" to combine staging environment settings with development build mode
         [key: string]: BundleEnvironment;
     };
 
@@ -131,6 +133,8 @@ export interface IBuildConfig {
     publicUrl?: string; // default: window.location
 
     // allows to configure API proxying, e.g. { '/api': 'http://localhost:3000' }
+    // setting this automatically disables host check for outbound HTTPS connections
+    // TLS certificates of remote hosts won't be checked. DO NOT USE THIS IN PRODUCTION!
     proxy?: {
         [apiEndpointUrl: string]: string;
     }; // default: {}
