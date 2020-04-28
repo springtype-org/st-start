@@ -136,7 +136,10 @@ export interface IBuildConfig {
     // setting this automatically disables host check for outbound HTTPS connections
     // TLS certificates of remote hosts won't be checked. DO NOT USE THIS IN PRODUCTION!
     proxy?: {
-        [apiEndpointUrl: string]: string;
+        [apiEndpointUrl: string]: string | {
+            target: string;
+            secure: boolean;
+        };
     }; // default: {}
 
     // --- IMAGE INLINING
@@ -241,19 +244,19 @@ export interface IBuildConfig {
 
     // sets the type of source mapping technique
     devTool?:
-        | 'eval'
-        | 'inline-source-map'
-        | 'cheap-eval-source-map'
-        | 'cheap-source-map'
-        | 'cheap-module-eval-source-map'
-        | 'cheap-module-source-map'
-        | 'eval-source-map'
-        | 'source-map'
-        | 'nosources-source-map'
-        | 'hidden-source-map'
-        | 'nosources-source-map'
-        | 'inline-cheap-source-map'
-        | 'inline-cheap-module-source-map'; // default: 'cheap-module-source-map'
+    | 'eval'
+    | 'inline-source-map'
+    | 'cheap-eval-source-map'
+    | 'cheap-source-map'
+    | 'cheap-module-eval-source-map'
+    | 'cheap-module-source-map'
+    | 'eval-source-map'
+    | 'source-map'
+    | 'nosources-source-map'
+    | 'hidden-source-map'
+    | 'nosources-source-map'
+    | 'inline-cheap-source-map'
+    | 'inline-cheap-module-source-map'; // default: 'cheap-module-source-map'
 
     // enables desktop notifications when errors happen while compilation
     enableDesktopNotifications?: boolean; // default: true
