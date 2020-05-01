@@ -85,7 +85,8 @@ const program = new commander.Command(packageJson.name)
     }
 
     if (program.env) {
-        runtimeConfiguration.env = program.env;
+        // apply --env or -e environment setting or fallback to shell environment variable
+        runtimeConfiguration.env = program.env || process.env.NODE_ENV;
     } 
 
     try {

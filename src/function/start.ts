@@ -28,13 +28,13 @@ export const start = async (
             try {
                 const configuration = { ...config, ...runtimeConfiguration };
 
+                log(`Setting environment: ${process.env.NODE_ENV}`);
+
                 // set NODE_ENV based on config, runtime config or fallback to "development"
                 process.env.NODE_ENV = configuration.env || defaultBundleEnvironment;
 
                 // read .env files
                 readDotEnv();
-
-                log(`Setting environment: ${process.env.NODE_ENV}`);
 
                 enableDefaultFeatures(configuration);
 
