@@ -33,10 +33,10 @@ export const start = async (
                     env: runtimeConfiguration.env || config.env || defaultBundleEnvironment
                 };
 
-                log(`Setting environment: ${process.env.NODE_ENV}`);
-
                 // set NODE_ENV based on config
                 process.env.NODE_ENV = configuration.env;
+
+                log(`Runtime environment (NODE_ENV): ${process.env.NODE_ENV}`);
 
                 // read .env files
                 readDotEnv();
