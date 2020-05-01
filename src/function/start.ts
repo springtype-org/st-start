@@ -26,12 +26,17 @@ export const start = async (
             }
         } else {
             try {
-                const configuration = { ...config, ...runtimeConfiguration };
+                const configuration = {
+                    ...config,
+                    ...runtimeConfiguration,
+                    // environment should be runtime env (argument provided by -e or --environment), st.config.ts env or default
+                    env: runtimeConfiguration.env || config.env || defaultBundleEnvironment
+                };
 
                 log(`Setting environment: ${process.env.NODE_ENV}`);
 
-                // set NODE_ENV based on config, runtime config or fallback to "development"
-                process.env.NODE_ENV = configuration.env || defaultBundleEnvironment;
+                // set NODE_ENV based on config
+                process.env.NODE_ENV = configuration.env;
 
                 // read .env files
                 readDotEnv();
