@@ -196,6 +196,9 @@ export interface IBuildConfig {
     // Allows you to use modern CSS features in your code today
     enablePostCSS?: boolean; // default: true
 
+    // allows to require specific PostCSS plugins from project scope
+    postCSSPlugins?: Array<any>; // default: []
+
     // automatically vender-prefixes CSS properties for broader support in older browser versions
     // e.g.: animation-start becomes --ms-animation-start
     enablePostCSSAutoPrefixing?: boolean; // default: true

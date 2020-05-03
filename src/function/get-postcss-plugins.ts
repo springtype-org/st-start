@@ -12,7 +12,7 @@ export const getPostCssConfig = (config: IBuildConfig): Array<any> => {
         };
     }
 
-    const postCSSPlugins: Array<any> = [];
+    const postCSSPlugins: Array<any> = config.postCSSPlugins || [];
 
     if (config.enablePostCSS) {
         // TODO: might use postcss-import too? https://github.com/postcss/postcss-import 

@@ -36,6 +36,8 @@ export const startSingle = async (
                 'warning',
             );
         }
+        
+        log('Compiling...');
 
         const port = config.port || defaultDevServerPort;
         const devServer = new (requireFromContext('webpack-dev-server', config))(webpack, {
